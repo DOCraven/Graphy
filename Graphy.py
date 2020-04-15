@@ -55,11 +55,15 @@ def Sampler(df):
     for x in range (0, 12): # sets each DF to have the correct index
         df[x] = df[x].set_index(['Interval End']) #set the index, as previous DF did not have have an index
         df[x].index = pd.to_datetime(df[x].index, unit='s') # some magic to make it not error out - 
-        sampled.append(df[x].resample("W").mean()) #sum each days demand 
+        sampled.append(df[x].groupby([df[x].index.hour, df[x].index.minute]).mean()) #sum each days demand 
+            #REFERENCE FOR THIS https://stackoverflow.com/questions/30579950/grouping-by-30-minutes-space-in-pandas
+        
+        
         ### PROBLEM IS HERE ### NEED TO CONVERT IT TO AVERAGE HOURLY DATA FOR THE ENTIRE MONTH
 
-    ## plotting for testing purposes
-    subset = sampled[0].iloc[:,0]
+    ### TESTING ###
+    subset = sampled[6].iloc[:,0] #arbitary location, arbitary mounth
+    # subset.to_csv('Weekly Average.csv')
     subset.plot(title = "JAN DAILY AVG")
     plt.show()
 
