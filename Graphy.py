@@ -45,33 +45,41 @@ def xlsxReader(input):
         # Answer by Toto_Tico
     return months
 
-def Sampler(df, interval = '30D', style = 'mean()'):
+def Sampler(df):
     """ Resamples the given data for a number of given parameters
     mean() = mean 
     y() = 
     z() = 
     """
-    sampled = df.resample(interval).mean()
+    sampled = []
+    for x in range (0, 12): # sets each DF to have the correct index
+        df[x] = df[x].set_index(['Interval End']) #set the index, as previous DF did not have have an index
+        df[x].index = pd.to_datetime(df[x].index, unit='s') # some magic to make it not error out - 
+        sampled.append(df[x].resample("W").mean()) #sum each days demand 
+        ### PROBLEM IS HERE ### NEED TO CONVERT IT TO AVERAGE HOURLY DATA FOR THE ENTIRE MONTH
+
+    ## plotting for testing purposes
+    subset = sampled[0].iloc[:,0]
+    subset.plot(title = "JAN DAILY AVG")
+    plt.show()
 
     return sampled
 
 def main():
     """ Main fcn"""
     plt.close('all')
-    ### STEP 1 - read all xlsx and save as df
+    ### STEP 1 - read all xlsx and save as monthly df
     name19 = 'Large Market Interval Data - March 01 2018- Feb 29 2019.xls' #2018/19 data
     # name20 = 'Large Market Interval Data - March 01 2019 -March 01 2020.xls' #2019/20 data
     
     NEW_2019 = xlsxReader(name19) #split into months, access via indexing 
 
+    ### STEP 2 - Resample down to 30 hourly data
 
-    ### STEP 2 - split each df into monthly sheets
+    NEW_2019_DAILY_MEAN = Sampler(NEW_2019)
 
-    ### STEP 3 - Average half hourly usage by month
 
-    ### STEP 4 - play with the data (test plotter)
-
-    # DailySummer(NEW_2019)
+  
 
 
 
