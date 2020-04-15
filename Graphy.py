@@ -41,7 +41,8 @@ def xlsxReader(input):
     data = pd.read_excel(input, parse_dates = True, index_col = None) #reads entire df and parses dates without creating an index
     
     months = [g for n, g in data.groupby(pd.Grouper(key='Interval End',freq='M'))] #finally splits it into months,  - is a list, so just access each list as an index (ie, JAN = 0, FEB = 1)
-    
+        # FROM https://stackoverflow.com/questions/41625077/python-pandas-split-a-timeserie-per-month-or-week
+        # Answer by Toto_Tico
     return months
 
 def Sampler(df, interval = '30D', style = 'mean()'):
