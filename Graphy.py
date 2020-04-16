@@ -9,11 +9,17 @@
 
 # https://gist.github.com/phobson/8d853ddf23d1d692fe4d#file-sac-regression-ipynb - I THINK THIS IS VERY USEFUL 
 # https://plotly.com/python/cufflinks/ - makes plotting nice and pretty
+    # https://github.com/santosjorge/cufflinks
 
 
 
 ## OUTPUTS ##
 #Average Monthly Hourly Usage
+
+
+## IDEAS ##
+# overlaw solar generation for each individual load to determine best time to turn things on 
+# as per drawn image in teams 
 
 
 
@@ -66,14 +72,18 @@ def MonthToDay(df):
 
     return sampled
 
-def Plotter(df, Title = 'DAILY AVERAGE'):
-    """ Plots the given dataframe
+def Plotter(df, Title = 'DAILY MEAN', XTITLE = 'Time', YTITLE = 'kWh'):
+    """ Plots the given dataframe using cufflinks
     Will require manual manipulation
     """
     
  
+    #individual plot
     # fig = df.iplot(asFigure=True, kind = 'box')
-    fig = df.iplot(asFigure=True, subplots=True, shape=(17,2), shared_xaxes=True, fill=True)
+    #big boii subplots (ie, 34 graphs)
+    # fig = df.iplot(asFigure=True, subplots=True, shape=(4,9), shared_xaxes=True, fill=True, xTitle = XTITLE, yTitle = YTITLE, title = Title) #17 2 is best for portrait monitors, 4 9 is best for landscape monitors
+    #nice looking individual plot
+    fig = df.iplot(asFigure=True, subplots=True, shared_xaxes=True, fill=True, xTitle = XTITLE, yTitle = YTITLE, title = Title) #indivual 
     fig.show()
 
     return #nothing
@@ -92,8 +102,8 @@ def main():
     ### STEP 2 - Resample down to 30 hourly data
 
     NEW_2019_DAILY_MEAN = MonthToDay(NEW_2019)
-    # Plotter(NEW_2019_DAILY_MEAN[0].iloc[:,0], 'Test')
-    Plotter(NEW_2019_DAILY_MEAN[0],  'Test')
+    Plotter(NEW_2019_DAILY_MEAN[0].iloc[:,0], 'JANUARY DAILY MEAN')
+    # Plotter(NEW_2019_DAILY_MEAN[0],  'JANUARY DAILY MEAN') #ie, gets the mean of every hour and averages it over a month
   
 
 
