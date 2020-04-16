@@ -8,6 +8,8 @@
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html#visualization-scatter-matrix
 
 # https://gist.github.com/phobson/8d853ddf23d1d692fe4d#file-sac-regression-ipynb - I THINK THIS IS VERY USEFUL 
+# https://plotly.com/python/cufflinks/ - makes plotting nice and pretty
+
 
 
 ## OUTPUTS ##
@@ -21,6 +23,7 @@
 
 import pandas as pd
 import datetime as dt
+import cufflinks as cf
 import matplotlib.pyplot as plt
 
 
@@ -45,11 +48,8 @@ def xlsxReader(input):
         # Answer by Toto_Tico
     return months
 
-def Sampler(df):
-    """ Resamples the given data for a number of given parameters
-    mean() = mean 
-    y() = 
-    z() = 
+def MonthToDay(df):
+    """Takes 30 minute interval data over the month, and returns an average for a specific day
     """
     sampled = []
     for x in range (0, 12): # sets each DF to have the correct index
@@ -62,12 +62,23 @@ def Sampler(df):
         ### PROBLEM IS HERE ### NEED TO CONVERT IT TO AVERAGE HOURLY DATA FOR THE ENTIRE MONTH
 
     ### TESTING ###
-    subset = sampled[6].iloc[:,0] #arbitary location, arbitary mounth
-    # subset.to_csv('Weekly Average.csv')
-    subset.plot(title = "JAN DAILY AVG")
-    plt.show()
+
 
     return sampled
+
+def Plotter(df, Title = 'DAILY AVERAGE'):
+    """ Plots the given dataframe
+    Will require manual manipulation
+    """
+    
+ 
+    # fig = df.iplot(asFigure=True, kind = 'box')
+    fig = df.iplot(asFigure=True, subplots=True, shape=(17,2), shared_xaxes=True, fill=True)
+    fig.show()
+
+    return #nothing
+
+    
 
 def main():
     """ Main fcn"""
@@ -80,9 +91,9 @@ def main():
 
     ### STEP 2 - Resample down to 30 hourly data
 
-    NEW_2019_DAILY_MEAN = Sampler(NEW_2019)
-
-
+    NEW_2019_DAILY_MEAN = MonthToDay(NEW_2019)
+    # Plotter(NEW_2019_DAILY_MEAN[0].iloc[:,0], 'Test')
+    Plotter(NEW_2019_DAILY_MEAN[0],  'Test')
   
 
 
