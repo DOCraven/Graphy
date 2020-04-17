@@ -12,15 +12,16 @@ A program to assist in analysing NEW's industrial energy consumption.
 
 Contains:
 
-- Code to manipulate data into DataFrams
+- Code to manipulate data into DataFrames
 - Code to plot the data nicely
 
 ## How to use
 
 1. Clone the master branch 
-1. Install Dependencies (if required)
-1. Place `interval data.xls` in the root folder (ie, same as `Graphy.py`)
-1. Have a play 
+  1.   `git clone [URL]`
+1. Install Dependencies (if required - `PIP INSTALL xyz`)
+1. Ensure the `xls` file is in the root folder (ie, same as `Graphy.py`)
+1. run the `Graphy.py` folder either within your IDE or via `python graphy.py` in the terminal  
 1. Break stuff
 
 
@@ -37,4 +38,4 @@ Use `PIP INSTALL [LIBRARY]` to install each dependency.
 -  Cufflinks
 -  Plotly 
 -  matplotlib
--  Maybe more libraries, 
+-  Maybe more libraries, I will advise if required 
