@@ -41,10 +41,13 @@ Contains:
 
 
 - The plotter function requires some manual manipulation to get it to plot nicely. 
+- This repo does not place nice with Anaconda. Please use this with a vanilla Python 3.8.x installation.
 
 ## Dependencies
 
 Use `PIP INSTALL [LIBRARY]` to install each dependency. 
+
+-  Python 3.8.x
 
 -  Pandas
 -  Cufflinks
