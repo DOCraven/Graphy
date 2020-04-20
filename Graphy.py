@@ -74,8 +74,32 @@ def DailyAverage(monthly_data):
         monthly_data[months].index = pd.to_datetime(monthly_data[months].index, unit='s') # some magic to make it not error out - 
         dailyAverage.append(monthly_data[months].groupby([monthly_data[months].index.hour, monthly_data[months].index.minute]).mean()) #sum each days demand, returns the mean of the hours over the month 
             # https://stackoverflow.com/a/30580906/13181119
-        
+    
+    dailyAverage[0].to_csv('1 REFERENCE.csv')
     return dailyAverage
+
+
+def WeeklyAverage(monthly_data):
+    """
+    Takes a dataframe of monthly data, and returns an average (mean) day for that month.
+    30 days in, 1 day out  
+    """
+    WeeklyAverage = [] # Average Day from the input
+    columnName = 'Interval End' #name of column that contains Parsed DateTimeObject
+    NumberofDataFrames = len(monthly_data)
+    for months in  range(0, NumberofDataFrames): # sets each DF to have the correct index
+        # monthly_data[months] = monthly_data[months].set_index([columnName]) #set the index, as previous DF did not have have an index
+        # monthly_data[months].index = pd.to_datetime(monthly_data[months].index, unit='s') # some magic to make it not error out - 
+        monthly_data[months] = monthly_data[months].groupby('Interval End').apply(lambda x: x.resample('W', on='Interval End').mean())
+        WeeklyAverage.append(monthly_data[months])
+        # WeeklyAverage.append(monthly_data[months].groupby([monthly_data[months].index.hour, monthly_data[months].index.minute]).mean()) #sum each days demand, returns the mean of the hours over the month 
+            # https://stackoverflow.com/a/30580906/13181119
+
+        
+    
+    WeeklyAverage[0].to_csv('2.csv')
+    return WeeklyAverage
+
 
 def DailySUM(monthly_data): #BROKEN
     """
@@ -150,15 +174,13 @@ def main():
 
     
     ## DAILY AVERAGE PER MONTH
-    DAILY_MEAN_2019 = DailyAverage(FullIntervalData_2019)
+    # DAILY_MEAN_2019 = DailyAverage(FullIntervalData_2019)
     # DAILY_MEAN_2020 = DailyAverage(FullIntervalData_2020)
 
-    ## MONTHLY CONSUMPTION
-    # NEW_2019_MONTHLY_CONSUMPTION = MonthToDaySum(FullIntervalData_2019) ## DISREGARD, CURRENTLY BROKEN
-    
-    ## MONTH TO DAILY SUM
-    # MONLTHY_DAILY_SUM_2019 = DailySUM(FullIntervalData_2019) #broken
-    # MONLTHY_DAILY_SUM_2020 = DailySUM(FullIntervalData_2020) #broken
+    ## WEEKLY AVERAGE PER MONTH 
+
+    TEST = WeeklyAverage(FullIntervalData_2019)
+   
     
     
     
@@ -166,7 +188,7 @@ def main():
     
     month = 1 # to plot a specific month, (JAN = 0, FEB = 1 .... DEC = 11)
     PLOT_TITLE_A = 'FEB DAILY MEAN' #change this to match the month 
-    PLOT_TITLE_B = 'FEB DAILY SUM'
+    PLOT_TITLE_B = 'FEB TEST WEEKLY MEAN'
     # axis labels
     x_label = 'Time'
     y_label = 'kWh'
@@ -181,15 +203,8 @@ def main():
     #TODO: Make the plotter functions more universal
     
     #2019
-    Plotter(DAILY_MEAN_2019[month], TITLE = PLOT_TITLE_A, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label)
-    # Plotter(MONLTHY_DAILY_SUM_2019[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label)
-    
-    #2020
-    # Plotter(DAILY_MEAN_2020[month], TITLE = PLOT_TITLE_A, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label)
-    # Plotter(MONLTHY_DAILY_SUM_2020[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label)
-    
-    # Plotter(NEW_2019_MONTHLY_CONSUMPTION[0], 'JANUARY SUM', KIND = 'Box') ## DISREGARD, CURRENTLY BROKEN
-
+    # Plotter(DAILY_MEAN_2019[month], TITLE = PLOT_TITLE_A, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
+    Plotter(TEST[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
 
     return #nothing
 
