@@ -45,12 +45,16 @@ import matplotlib.pyplot as plt
 
 
 def xlsxReader(xls_file_path): 
-    """reads a given file (xls_file_path) and returns a list of DataFrames split into months
+    """reads a given file (xls_file_path) and returns a list of DataFrames split into months and weeks
     Access said dataframe via indexing
     ie, JAN = 0
         FEB = 1
         ...
         DEC = 11
+        WEEK 1 = 0
+        WEEK 2 = 1
+        ...
+        WEEK 52 = 51
     """
     ### STEP 1 -  read the data without index files
     data = pd.read_excel(xls_file_path, parse_dates = True, index_col = None) #reads entire df and parses dates without creating an index
@@ -58,7 +62,9 @@ def xlsxReader(xls_file_path):
     months = [g for n, g in data.groupby(pd.Grouper(key='Interval End',freq='M'))] #splits it into months
         # is a list, so just access each list as an index (ie, JAN = 0, FEB = 1)
         # https://stackoverflow.com/a/49491178/13181119
-        
+    
+
+
     return months
 
 def DailyAverage(monthly_data):
@@ -81,24 +87,26 @@ def DailyAverage(monthly_data):
 
 def WeeklyAverage(monthly_data):
     """
-    Takes a dataframe of monthly data, and returns an average (mean) day for that month.
-    30 days in, 1 day out  
+    Takes a list of dataframes (12x) and returns the average for each week
+    30 days in, 7 day out  
     """
-    WeeklyAverage = [] # Average Day from the input
-    columnName = 'Interval End' #name of column that contains Parsed DateTimeObject
-    NumberofDataFrames = len(monthly_data)
-    for months in  range(0, NumberofDataFrames): # sets each DF to have the correct index
-        # monthly_data[months] = monthly_data[months].set_index([columnName]) #set the index, as previous DF did not have have an index
-        # monthly_data[months].index = pd.to_datetime(monthly_data[months].index, unit='s') # some magic to make it not error out - 
-        monthly_data[months] = monthly_data[months].groupby('Interval End').apply(lambda x: x.resample('W', on='Interval End').mean())
-        WeeklyAverage.append(monthly_data[months])
-        # WeeklyAverage.append(monthly_data[months].groupby([monthly_data[months].index.hour, monthly_data[months].index.minute]).mean()) #sum each days demand, returns the mean of the hours over the month 
-            # https://stackoverflow.com/a/30580906/13181119
-
-        
+    ## VARS
     
-    WeeklyAverage[0].to_csv('2.csv')
-    return WeeklyAverage
+    weeks = [] #should have 52 weeks
+    columnName = 'Interval End' #name of column that contains Parsed DateTimeObject
+    weekIndex = 5 #number of weeks in each month
+    
+    
+    # split into weeks
+    NumberofDataFrames = len(monthly_data)
+    for months in  range(0, NumberofDataFrames): # sets each dataframe to have the correct index
+        WeeksFromMonth = [g for n, g in monthly_data[months].groupby(pd.Grouper(key=columnName,freq='W'))] #splits 1x month into 4x weeks
+        weeks.append(WeeksFromMonth) #joins 4x weeks to previous weeks. Week starts on a WED for some reason
+
+
+
+
+    return #nothing
 
 
 def DailySUM(monthly_data): #BROKEN
@@ -170,16 +178,18 @@ def main():
         ## READING XLS, change to pick which year
     FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
     # FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
-    ### STEP 2 - Playing with the data
+    
+    
+            ### STEP 2 - Playing with the data
 
     
-    ## DAILY AVERAGE PER MONTH
+    ## DAILY AVERAGE PER MONTH ##
     # DAILY_MEAN_2019 = DailyAverage(FullIntervalData_2019)
     # DAILY_MEAN_2020 = DailyAverage(FullIntervalData_2020)
 
-    ## WEEKLY AVERAGE PER MONTH 
+    ## WEEKLY AVERAGE PER MONTH ##
 
-    TEST = WeeklyAverage(FullIntervalData_2019)
+    WeeklyAverage(FullIntervalData_2019)
    
     
     
@@ -204,7 +214,7 @@ def main():
     
     #2019
     # Plotter(DAILY_MEAN_2019[month], TITLE = PLOT_TITLE_A, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
-    Plotter(TEST[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
+    # Plotter(TEST[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
 
     return #nothing
 
