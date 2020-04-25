@@ -40,6 +40,7 @@ import pandas as pd
 import datetime as dt
 import cufflinks as cf
 import matplotlib.pyplot as plt
+import datetime as dt
 
 
 ### FUNCTIONS ###
@@ -119,28 +120,44 @@ def WeeklyAverage(monthly_data):
         WeeksFromMonth = [g for n, g in monthly_data[months].groupby(pd.Grouper(key=columnName,freq='W'))] #splits 1x month into 4x weeks
         weeks.append(WeeksFromMonth) #joins 4x weeks to previous weeks. Week starts on a WED for some reason
 
+
+    
+
+
+
+
     ### GOOD TO HERE ###
+    week0 = weeks[0][0]
+    # week1 = weeks[0][1]
+    # week2 = weeks[0][2]
+    # week3 = weeks[0][3]
+    # week4 = weeks[0][4]
 
-    week0 = weeks[0][0].iloc[:,1:].reset_index()
-    week1 = weeks[0][1].iloc[:,1:].reset_index()
-    week2 = weeks[0][2].iloc[:,1:].reset_index()
-    week3 = weeks[0][3].iloc[:,1:].reset_index()
-    week4 = weeks[0][4].iloc[:,1:].reset_index()
-    try:
-        week5 = weeks[0][5].iloc[:,1:].reset_index()
-    except IndexError:
-        exists = False
+    week0['DATE'] = week0[columnName].dt.date #splits date, throws it at the end
+    week0['TIME'] = week0[columnName].dt.time #splits time, throws it at the end
+    
+    date = week0['DATE'] #creates new datafrane called DATE
+    time = week0['TIME'] #creates new dataframe called TIME
+    week0.drop(labels=['DATE', 'TIME'], axis=1,inplace = True) #drops the DATE and TIME from the end of the dataframe
+    week0.insert(0, 'TIME', time) #inserts TIME at the beginning of the dataframe
+    week0.insert(0, 'DATE', date) #inserts DATE at the beginning of the dataframe
+            # https://stackoverflow.com/a/25122293/13181119
+    week0.to_csv('Week0dropped.csv') #for testing 
 
-    week1.to_csv('1_miss.csv')
-    week2.to_csv('2_miss.csv')
-    week3.to_csv('3_miss.csv')
-    week4.to_csv('4_miss.csv')
-    if exists: 
-        week5.to_csv('5_miss.csv')
+    ## DATE TO DAY
+    week0['day_of_week'] = week0[columnName].dt.day_name() #converts INTERVAL END DATE to named day of the week
+    dayofweek = week0['day_of_week'] #new dataframe of day names, to replace DATE with 
+    week0.drop([columnName, 'DATE', 'day_of_week'], axis = 1, inplace = True) #dropped the INTERVAL END, DAY_OF_WEEK  and DATE column
+    week0.insert(0, 'day_of_week', dayofweek) #inserts DAY_OF_WEEK at the beginning of the dataframe
 
 
-    week12 = (week1 + week2 + week3 + week4 + week5)/5
-    week12.to_csv('1+2_miss.csv')
+    ### PSUEDOCDOE
+    # STEP 1 split interval end into DATE and TIME columns
+    # STEP 2 convert DATE column into DAYOFWEEK column
+    # STEP 3 ADD EACH DATAFRAME TOGETHER
+    # STEP 4 divide by number of weeks (hard)
+
+    
     return #nothing
 
 
