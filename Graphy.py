@@ -13,6 +13,8 @@
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html#visualization-scatter-matrix
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases%3E - frequency alias
 
+    # https://pandas-docs.github.io/pandas-docs-travis/user_guide/groupby.html # GROUPYBY DATA FOR DOING STUFF ON MULTINDEX STUFF
+
     # https://stackoverflow.com/a/17001474/13181119
     # https://stackoverflow.com/a/36684166/13181119
 
@@ -111,9 +113,10 @@ def WeeklyAverage(monthly_data):
     
    
     fullDateColumnName = 'Interval End' #name of column that contains Parsed DateTimeObject
-   
+    WeeklyAverage = []
     # Convert monthly datatime into NAME OF DAY and TIME 
     NumberofDataFrames = len(monthly_data)
+    # NumberofDataFrames = 2 #for testing 
     for months in  range(0, NumberofDataFrames): # iterate through the list of dataframes
         #convert datetime object into individual date and time columns
         monthly_data[months]['TIME'] = monthly_data[months][fullDateColumnName].dt.time #splits time, throws it at the end    
@@ -133,18 +136,60 @@ def WeeklyAverage(monthly_data):
         dayofweek_temp = monthly_data[months]['DAY'] #new dataframe of day names, to replace DATE with
         monthly_data[months].drop(labels=['DAY', fullDateColumnName], axis=1,inplace = True) #drops the DAY column from the end of the dataframe
         monthly_data[months].insert(0, 'DAY', dayofweek_temp) #inserts DAY_OF_WEEK at the beginning of the dataframe
+        # monthly_data[months].set_index(['DAY', 'TIME'], inplace = True) #create a multi index for future things
 
     ## DO SOME FANCY MATHS HERE ##
-    # 
-    for months in  range(0, NumberofDataFrames): # iterate through the list of data frames
-        foo = 123
+    # for months in  range(0, NumberofDataFrames):
+    #     monthly_data[months].apply(pd.to_numeric, errors='coerce').dropna(how='all') #dont actually know if this is required or what it does, but its here so #YOLO
+    #     monthly_data[months].groupby(['DAY', 'TIME']).median() #group the dataframe by DAYNAME and TIME, and find the median of each time 
+    #         # https://stackoverflow.com/a/52482016/13181119
+    #     WeeklyAverage.append(monthly_data[months]) #append to a list of dataframes, and return this to the main function
 
+
+    testdata = monthly_data[0]
+    # # testdata.to_csv('Monthly_Test.csv')
+    testdata.apply(pd.to_numeric, errors='coerce').dropna(how='all') #dont actually know if this is required or what it does, but its here so #YOLO
+    ## split the data
+    
+    # median = testdata.groupby(['DAY', 'TIME']).median() # similar to this https://stackoverflow.com/a/52482016/13181119
+    cols = list(testdata)
+    output = []
+    
+    
+    # print(testdata.head(10))
+    # print(testdata.shape())
+    mean = testdata.groupby(['DAY', 'TIME']).mean()
+    mean.to_csv('BIG MEAN3.csv')
+    # print(testdata.head(10))
+    
+    # output.to_csv('TIME GROUP STEVE.csv')
+    
+    
+    
+    
+    
+    
+    
+    # for months in  range(0, NumberofDataFrames): # iterate through the list of data frames
+    #     monthly_data[months].to_csv
+    # FOR TESTING 
+    # monthly_data[0].to_csv('03.csv')
+    # monthly_data[1].to_csv('04.csv')
+    # monthly_data[2].to_csv('05.csv')
+    # monthly_data[3].to_csv('06.csv')
+    # monthly_data[4].to_csv('07.csv')
+    # monthly_data[5].to_csv('08.csv')
+    # monthly_data[6].to_csv('09.csv')
+    # monthly_data[7].to_csv('10.csv')
+    # monthly_data[8].to_csv('11.csv')
+    # monthly_data[9].to_csv('12.csv')
+    # monthly_data[10].to_csv('01.csv')
+    # monthly_data[11].to_csv('02.csv')
     
 
 
-
    
-    return #nothing
+    return WeeklyAverage
 
 
 def DailySUM(monthly_data): #BROKEN
@@ -227,8 +272,8 @@ def main():
 
     ## WEEKLY AVERAGE PER MONTH ##
 
-    WeeklyAverage(FullIntervalData_2019)
-   
+    WEEKLY_MEDIAN_2019 = WeeklyAverage(FullIntervalData_2019)
+    # WEEKLY_MEDIAN_2019[0].to_csv('MARCH WEEKLY MED.csv')
     
     
     
@@ -236,7 +281,7 @@ def main():
     
     month = 1 # to plot a specific month, (JAN = 0, FEB = 1 .... DEC = 11)
     PLOT_TITLE_A = 'FEB DAILY MEAN' #change this to match the month 
-    PLOT_TITLE_B = 'FEB TEST WEEKLY MEAN'
+    PLOT_TITLE_B = 'MAR TEST WEEKLY MEAN'
     # axis labels
     x_label = 'Time'
     y_label = 'kWh'
@@ -253,6 +298,7 @@ def main():
     #2019
     # Plotter(DAILY_MEAN_2019[month], TITLE = PLOT_TITLE_A, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
     # Plotter(TEST[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
+    # Plotter(WEEKLY_MEDIAN_2019[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
 
     return #nothing
 
@@ -264,6 +310,6 @@ main()
 
 
 
-print('CODE \n C\n  O\n   M\n    P\n     L\n      E\n       T\n        E\n         D\n')
+print('\nCODE \n C\n  O\n   M\n    P\n     L\n      E\n       T\n        E\n         D\n')
 
 
