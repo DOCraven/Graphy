@@ -11,6 +11,7 @@
     # https://pandas.pydata.org/pandas-docs/stable/reference/resampling.html
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html#visualization-scatter-matrix
+    # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases%3E - frequency alias
 
     # https://stackoverflow.com/a/17001474/13181119
     # https://stackoverflow.com/a/36684166/13181119
@@ -90,6 +91,21 @@ def WeeklyAverage(monthly_data):
     Takes a list of dataframes (12x) and returns the average for each week
     30 days in, 7 day out  
     """
+    ## NOTES ##
+    # using NEW data, the year starts in March, thus 
+    # MAR = 0
+    # APR = 1
+    # MAY = 2
+    # JUN = 3
+    # JUL = 4
+    # AUG = 5
+    # SEP = 6
+    # OCT = 7
+    # NOV = 8
+    # DEC = 9
+    # JAN = 10
+    # FEB = 11
+
     ## VARS
     
     weeks = [] #should have 52 weeks
@@ -103,9 +119,28 @@ def WeeklyAverage(monthly_data):
         WeeksFromMonth = [g for n, g in monthly_data[months].groupby(pd.Grouper(key=columnName,freq='W'))] #splits 1x month into 4x weeks
         weeks.append(WeeksFromMonth) #joins 4x weeks to previous weeks. Week starts on a WED for some reason
 
+    ### GOOD TO HERE ###
+
+    week0 = weeks[0][0].iloc[:,1:].reset_index()
+    week1 = weeks[0][1].iloc[:,1:].reset_index()
+    week2 = weeks[0][2].iloc[:,1:].reset_index()
+    week3 = weeks[0][3].iloc[:,1:].reset_index()
+    week4 = weeks[0][4].iloc[:,1:].reset_index()
+    try:
+        week5 = weeks[0][5].iloc[:,1:].reset_index()
+    except IndexError:
+        exists = False
+
+    week1.to_csv('1_miss.csv')
+    week2.to_csv('2_miss.csv')
+    week3.to_csv('3_miss.csv')
+    week4.to_csv('4_miss.csv')
+    if exists: 
+        week5.to_csv('5_miss.csv')
 
 
-
+    week12 = (week1 + week2 + week3 + week4 + week5)/5
+    week12.to_csv('1+2_miss.csv')
     return #nothing
 
 
