@@ -139,53 +139,21 @@ def WeeklyAverage(monthly_data):
         # monthly_data[months].set_index(['DAY', 'TIME'], inplace = True) #create a multi index for future things
 
     ## DO SOME FANCY MATHS HERE ##
-    # for months in  range(0, NumberofDataFrames):
-    #     monthly_data[months].apply(pd.to_numeric, errors='coerce').dropna(how='all') #dont actually know if this is required or what it does, but its here so #YOLO
-    #     monthly_data[months].groupby(['DAY', 'TIME']).median() #group the dataframe by DAYNAME and TIME, and find the median of each time 
-    #         # https://stackoverflow.com/a/52482016/13181119
-    #     WeeklyAverage.append(monthly_data[months]) #append to a list of dataframes, and return this to the main function
+    for months in  range(0, NumberofDataFrames): #iterate through each month
+        median = monthly_data[months].groupby(['DAY', 'TIME']).median() #find the median grouping by 
+        WeeklyAverage.append(median) #append to a list of dataframes, and return this to the main function
 
 
-    testdata = monthly_data[0]
-    # # testdata.to_csv('Monthly_Test.csv')
-    testdata.apply(pd.to_numeric, errors='coerce').dropna(how='all') #dont actually know if this is required or what it does, but its here so #YOLO
-    ## split the data
     
-    # median = testdata.groupby(['DAY', 'TIME']).median() # similar to this https://stackoverflow.com/a/52482016/13181119
-    cols = list(testdata)
-    output = []
-    
-    
-    # print(testdata.head(10))
-    # print(testdata.shape())
-    mean = testdata.groupby(['DAY', 'TIME']).mean()
-    mean.to_csv('BIG MEAN3.csv')
-    # print(testdata.head(10))
-    
-    # output.to_csv('TIME GROUP STEVE.csv')
+
+    ## STEVE WORKING CODE ##
+    # testdata = monthly_data[5]
+    # mean = testdata.groupby(['DAY', 'TIME']).median()
+    # mean.to_csv('BIG MEAN5.csv')
+    # # print(testdata.head(10))
     
     
-    
-    
-    
-    
-    
-    # for months in  range(0, NumberofDataFrames): # iterate through the list of data frames
-    #     monthly_data[months].to_csv
-    # FOR TESTING 
-    # monthly_data[0].to_csv('03.csv')
-    # monthly_data[1].to_csv('04.csv')
-    # monthly_data[2].to_csv('05.csv')
-    # monthly_data[3].to_csv('06.csv')
-    # monthly_data[4].to_csv('07.csv')
-    # monthly_data[5].to_csv('08.csv')
-    # monthly_data[6].to_csv('09.csv')
-    # monthly_data[7].to_csv('10.csv')
-    # monthly_data[8].to_csv('11.csv')
-    # monthly_data[9].to_csv('12.csv')
-    # monthly_data[10].to_csv('01.csv')
-    # monthly_data[11].to_csv('02.csv')
-    
+
 
 
    
@@ -281,7 +249,7 @@ def main():
     
     month = 1 # to plot a specific month, (JAN = 0, FEB = 1 .... DEC = 11)
     PLOT_TITLE_A = 'FEB DAILY MEAN' #change this to match the month 
-    PLOT_TITLE_B = 'MAR TEST WEEKLY MEAN'
+    PLOT_TITLE_B = 'MAR TEST WEEKLY MEDIAN'
     # axis labels
     x_label = 'Time'
     y_label = 'kWh'
@@ -294,11 +262,11 @@ def main():
 
     #call different plotter functions to plot different types of plots for different data
     #TODO: Make the plotter functions more universal
-    
+    # WEEKLY_MEDIAN_2019[month].to_csv('MAR MEAN.csv')
     #2019
     # Plotter(DAILY_MEAN_2019[month], TITLE = PLOT_TITLE_A, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
     # Plotter(TEST[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
-    # Plotter(WEEKLY_MEDIAN_2019[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
+    Plotter(WEEKLY_MEDIAN_2019[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
 
     return #nothing
 
