@@ -110,45 +110,61 @@ def WeeklyAverage(monthly_data):
     ## VARS
     
     weeks = [] #should have 52 weeks
-    columnName = 'Interval End' #name of column that contains Parsed DateTimeObject
+    fullDateColumnName = 'Interval End' #name of column that contains Parsed DateTimeObject
     weekIndex = 5 #number of weeks in each month
     
     
     # split into weeks
     NumberofDataFrames = len(monthly_data)
     for months in  range(0, NumberofDataFrames): # sets each dataframe to have the correct index
-        WeeksFromMonth = [g for n, g in monthly_data[months].groupby(pd.Grouper(key=columnName,freq='W'))] #splits 1x month into 4x weeks
-        weeks.append(WeeksFromMonth) #joins 4x weeks to previous weeks. Week starts on a WED for some reason
+        #convert datetime object into individual date and time columns
+        monthly_data[months]['DATE'] = monthly_data[months][fullDateColumnName].dt.date #splits date, throws it at the end
+        monthly_data[months]['TIME'] = monthly_data[months][fullDateColumnName].dt.time #splits time, throws it at the end    
+        
+        #create temp holding dataframes so they can be inserted into the front of the dataframe
+        date_temp =  monthly_data[months]['DATE'] #creates new datafrane called DATE
+        time_temp =  monthly_data[months]['TIME'] #creates new dataframe called TIME
 
+        # move the DATE and TIME columns to the front
+        monthly_data[months].drop(labels=['DATE', 'TIME'], axis=1,inplace = True) #drops the DATE and TIME from the end of the dataframe
+        monthly_data[months].insert(0, 'TIME', time_temp) #inserts TIME at the beginning of the dataframe
+        monthly_data[months].insert(0, 'DATE', date_temp) #inserts DATE at the beginning of the dataframe
+            # https://stackoverflow.com/a/25122293/13181119
+        
+        # get the DAY NAME from datetime object
+        monthly_data[months]['DAY'] = monthly_data[months][fullDateColumnName].dt.day_name()
+            # https://stackoverflow.com/a/30222759/13181119
+        dayofweek_temp = monthly_data[months]['DAY'] #new dataframe of day names, to replace DATE with
+        monthly_data[months].drop(labels=['DAY', 'DATE', fullDateColumnName], axis=1,inplace = True) #drops the DAY column from the end of the dataframe
+        monthly_data[months].insert(0, 'DAY', dayofweek_temp) #inserts DAY_OF_WEEK at the beginning of the dataframe
 
-    
-
+    monthly_data[0].to_csv('MARCH NAMED.csv')
 
 
 
     ### GOOD TO HERE ###
-    week0 = weeks[0][0]
-    # week1 = weeks[0][1]
-    # week2 = weeks[0][2]
-    # week3 = weeks[0][3]
-    # week4 = weeks[0][4]
+    # week0 = weeks[0][0]
+    # # week1 = weeks[0][1]
+    # # week2 = weeks[0][2]
+    # # week3 = weeks[0][3]
+    # # week4 = weeks[0][4]
 
-    week0['DATE'] = week0[columnName].dt.date #splits date, throws it at the end
-    week0['TIME'] = week0[columnName].dt.time #splits time, throws it at the end
+    # week0['DATE'] = week0[fullDateColumnName].dt.date #splits date, throws it at the end
+    # week0['TIME'] = week0[fullDateColumnName].dt.time #splits time, throws it at the end
     
-    date = week0['DATE'] #creates new datafrane called DATE
-    time = week0['TIME'] #creates new dataframe called TIME
-    week0.drop(labels=['DATE', 'TIME'], axis=1,inplace = True) #drops the DATE and TIME from the end of the dataframe
-    week0.insert(0, 'TIME', time) #inserts TIME at the beginning of the dataframe
-    week0.insert(0, 'DATE', date) #inserts DATE at the beginning of the dataframe
-            # https://stackoverflow.com/a/25122293/13181119
-    week0.to_csv('Week0dropped.csv') #for testing 
+    # date = week0['DATE'] #creates new datafrane called DATE
+    # time = week0['TIME'] #creates new dataframe called TIME
+    # week0.drop(labels=['DATE', 'TIME'], axis=1,inplace = True) #drops the DATE and TIME from the end of the dataframe
+    # week0.insert(0, 'TIME', time) #inserts TIME at the beginning of the dataframe
+    # week0.insert(0, 'DATE', date) #inserts DATE at the beginning of the dataframe
+    #         # https://stackoverflow.com/a/25122293/13181119
+    # week0.to_csv('Week0dropped.csv') #for testing 
 
-    ## DATE TO DAY
-    week0['day_of_week'] = week0[columnName].dt.day_name() #converts INTERVAL END DATE to named day of the week
-    dayofweek = week0['day_of_week'] #new dataframe of day names, to replace DATE with 
-    week0.drop([columnName, 'DATE', 'day_of_week'], axis = 1, inplace = True) #dropped the INTERVAL END, DAY_OF_WEEK  and DATE column
-    week0.insert(0, 'day_of_week', dayofweek) #inserts DAY_OF_WEEK at the beginning of the dataframe
+    # ## DATE TO DAY
+    # week0['day_of_week'] = week0[fullDateColumnName].dt.day_name() #converts INTERVAL END DATE to named day of the week
+    # dayofweek = week0['day_of_week'] #new dataframe of day names, to replace DATE with 
+    # week0.drop([fullDateColumnName, 'DATE', 'day_of_week'], axis = 1, inplace = True) #dropped the INTERVAL END, DAY_OF_WEEK  and DATE column
+    # week0.insert(0, 'day_of_week', dayofweek) #inserts DAY_OF_WEEK at the beginning of the dataframe
 
 
     ### PSUEDOCDOE
@@ -157,7 +173,9 @@ def WeeklyAverage(monthly_data):
     # STEP 3 ADD EACH DATAFRAME TOGETHER
     # STEP 4 divide by number of weeks (hard)
 
-    
+    ### SPLIT MONTH INTO WEEKS 
+    # WeeksFromMonth = [g for n, g in monthly_data[months].groupby(pd.Grouper(key=columnName,freq='W'))] #splits 1x month into 4x weeks
+    #     weeks.append(WeeksFromMonth) #joins 4x weeks to previous weeks. Week starts on a WED for some reason
     return #nothing
 
 
