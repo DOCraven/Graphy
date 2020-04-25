@@ -116,24 +116,22 @@ def WeeklyAverage(monthly_data):
     NumberofDataFrames = len(monthly_data)
     for months in  range(0, NumberofDataFrames): # iterate through the list of dataframes
         #convert datetime object into individual date and time columns
-        monthly_data[months]['DATE'] = monthly_data[months][fullDateColumnName].dt.date #splits date, throws it at the end
         monthly_data[months]['TIME'] = monthly_data[months][fullDateColumnName].dt.time #splits time, throws it at the end    
         
         #create temp holding dataframes so they can be inserted into the front of the dataframe
-        date_temp =  monthly_data[months]['DATE'] #creates new datafrane called DATE
         time_temp =  monthly_data[months]['TIME'] #creates new dataframe called TIME
 
         # move the DATE and TIME columns to the front
-        monthly_data[months].drop(labels=['DATE', 'TIME'], axis=1,inplace = True) #drops the DATE and TIME from the end of the dataframe
+        monthly_data[months].drop(labels=['TIME'], axis=1,inplace = True) #drops the DATE and TIME from the end of the dataframe
         monthly_data[months].insert(0, 'TIME', time_temp) #inserts TIME at the beginning of the dataframe
-        monthly_data[months].insert(0, 'DATE', date_temp) #inserts DATE at the beginning of the dataframe
+       
             # https://stackoverflow.com/a/25122293/13181119
         
         # get the DAY NAME from datetime object
         monthly_data[months]['DAY'] = monthly_data[months][fullDateColumnName].dt.day_name()
             # https://stackoverflow.com/a/30222759/13181119
         dayofweek_temp = monthly_data[months]['DAY'] #new dataframe of day names, to replace DATE with
-        monthly_data[months].drop(labels=['DAY', 'DATE', fullDateColumnName], axis=1,inplace = True) #drops the DAY column from the end of the dataframe
+        monthly_data[months].drop(labels=['DAY', fullDateColumnName], axis=1,inplace = True) #drops the DAY column from the end of the dataframe
         monthly_data[months].insert(0, 'DAY', dayofweek_temp) #inserts DAY_OF_WEEK at the beginning of the dataframe
 
     ## DO SOME FANCY MATHS HERE ##
