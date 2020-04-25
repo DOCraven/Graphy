@@ -43,6 +43,7 @@ import datetime as dt
 import cufflinks as cf
 import matplotlib.pyplot as plt
 import datetime as dt
+from calendar import day_name
 
 
 ### FUNCTIONS ###
@@ -114,6 +115,7 @@ def WeeklyAverage(monthly_data):
    
     fullDateColumnName = 'Interval End' #name of column that contains Parsed DateTimeObject
     WeeklyAverage = []
+    day_index = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] #needed for sorting the dataframe into specific days
     # Convert monthly datatime into NAME OF DAY and TIME 
     NumberofDataFrames = len(monthly_data)
     # NumberofDataFrames = 2 #for testing 
@@ -136,13 +138,19 @@ def WeeklyAverage(monthly_data):
         dayofweek_temp = monthly_data[months]['DAY'] #new dataframe of day names, to replace DATE with
         monthly_data[months].drop(labels=['DAY', fullDateColumnName], axis=1,inplace = True) #drops the DAY column from the end of the dataframe
         monthly_data[months].insert(0, 'DAY', dayofweek_temp) #inserts DAY_OF_WEEK at the beginning of the dataframe
-        # monthly_data[months].set_index(['DAY', 'TIME'], inplace = True) #create a multi index for future things
+        # monthly_data[months].set_index(['DAY', 'TIME'], inplace = True) #create a multi index for future things - breaks next bit of function
 
     ## DO SOME FANCY MATHS HERE ##
     for months in  range(0, NumberofDataFrames): #iterate through each month
-        median = monthly_data[months].groupby(['DAY', 'TIME']).median() #find the median grouping by DAY and TIME
-        WeeklyAverage.append(median) #append to a list of dataframes, and return this to the main function
+        sorted = monthly_data[months] #temp dataframe to make sorting it easier 
+        sorted['DAY'] = pd.Categorical(sorted['DAY'], categories = day_index, ordered = True) #look, some magic happens here, not entirely sure 
+            #what the go is. This is the SO reference #https://stackoverflow.com/a/39223389/13181119
 
+        median = sorted.groupby(['DAY', 'TIME']).median() #find the median grouping by DAY and TIME
+        WeeklyAverage.append(median) #append to a list of dataframes, and return this to the main function
+    
+    
+    # WeeklyAverage[0].to_csv('Updated Median.csv') #FOR TESTING
     return WeeklyAverage
 
 
@@ -233,7 +241,7 @@ def main():
     
     ### PLOTTING NICE GRAPHS ###
     
-    month = 1 # to plot a specific month, (JAN = 0, FEB = 1 .... DEC = 11)
+    month = 0 # to plot a specific month, (JAN = 0, FEB = 1 .... DEC = 11)
     PLOT_TITLE_A = 'FEB DAILY MEAN' #change this to match the month 
     PLOT_TITLE_B = 'MAR TEST WEEKLY MEDIAN'
     # axis labels
