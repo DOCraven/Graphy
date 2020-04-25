@@ -140,23 +140,9 @@ def WeeklyAverage(monthly_data):
 
     ## DO SOME FANCY MATHS HERE ##
     for months in  range(0, NumberofDataFrames): #iterate through each month
-        median = monthly_data[months].groupby(['DAY', 'TIME']).median() #find the median grouping by 
+        median = monthly_data[months].groupby(['DAY', 'TIME']).median() #find the median grouping by DAY and TIME
         WeeklyAverage.append(median) #append to a list of dataframes, and return this to the main function
 
-
-    
-
-    ## STEVE WORKING CODE ##
-    # testdata = monthly_data[5]
-    # mean = testdata.groupby(['DAY', 'TIME']).median()
-    # mean.to_csv('BIG MEAN5.csv')
-    # # print(testdata.head(10))
-    
-    
-
-
-
-   
     return WeeklyAverage
 
 
