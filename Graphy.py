@@ -89,7 +89,6 @@ def DailyAverage(monthly_data):
     dailyAverage[0].to_csv('1 REFERENCE.csv')
     return dailyAverage
 
-
 def WeeklyAverage(monthly_data):
     """
     Takes a list of dataframes (12x) and returns the average for each week
@@ -153,7 +152,6 @@ def WeeklyAverage(monthly_data):
     # WeeklyAverage[0].to_csv('Updated Median.csv') #FOR TESTING
     return WeeklyAverage
 
-
 def DailySUM(monthly_data): #BROKEN
     """
     Takes 30 minute interval data over the month, and returns a sum for a each day
@@ -215,52 +213,70 @@ def Plotter(df, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYP
 def main():
     """ Main fcn"""
     plt.close('all')
-    ### STEP 1 - read all xlsx and save as monthly df
-        ## VARS
+    
+    ## VARS ##
+    
+    NE_WATER_MONTHS = {10: 'JAN', 11: 'FEB', 0: 'MAR', 1: 'APR', 2: 'MAY', 3: 'JUN', 4: 'JUL', 5: 'AUG', 6: 'SEP', 7: 'OCT', 8: 'NOV', 9: 'DEC'} 
+        #NORTH EAST WATER supplied data starts at MAR, THUS MAR = 0, APR = 1 etc
+    
+    
     Interval_data_2019_file_name = 'Large Market Interval Data - March 01 2018- Feb 29 2019.xls' #2018/19 data
-    # Interval_data_2020_file_name = 'Large Market Interval Data - March 01 2019 -March 01 2020.xls' #2019/20 data
+    Interval_data_2020_file_name = 'Large Market Interval Data - March 01 2019 -March 01 2020.xls' #2019/20 data
     
         ## READING XLS, change to pick which year
+    
+    ### STEP 1 - read all xlsx and save as monthly dataframes ##
     FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
-    # FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
+    FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
     
     
             ### STEP 2 - Playing with the data
 
     
-    ## DAILY AVERAGE PER MONTH ##
-    # DAILY_MEAN_2019 = DailyAverage(FullIntervalData_2019)
-    # DAILY_MEAN_2020 = DailyAverage(FullIntervalData_2020)
+    ## STEP 2 - CALCULATE DAILY AVERAGE PER MONTH ##
+    DAILY_MEAN_2019 = DailyAverage(FullIntervalData_2019)
+    DAILY_MEAN_2020 = DailyAverage(FullIntervalData_2020)
 
-    ## WEEKLY AVERAGE PER MONTH ##
+    ## STEP 3 - CALCULATE WEEKLY AVERAGE PER MONTH ##
 
     WEEKLY_MEDIAN_2019 = WeeklyAverage(FullIntervalData_2019)
-    # WEEKLY_MEDIAN_2019[0].to_csv('MARCH WEEKLY MED.csv')
+    WEEKLY_MEDIAN_2020 = WeeklyAverage(FullIntervalData_2020)
     
     
     
-    ### PLOTTING NICE GRAPHS ###
-    
-    month = 0 # to plot a specific month, (JAN = 0, FEB = 1 .... DEC = 11)
-    PLOT_TITLE_A = 'FEB DAILY MEAN' #change this to match the month 
-    PLOT_TITLE_B = 'MAR TEST WEEKLY MEDIAN'
-    # axis labels
-    x_label = 'Time'
-    y_label = 'kWh'
+    ### STEP 4 - PLOTTING GRAPHS ###
+    ## STEP 4A - DAILY AVERAGING PLOTS ##
+        #uncomment each individual section to plot respective data. 
 
-    plot_type = 'Individual'
-        #plot types
-        # 'Subplot'
-        # 'Individual'
-        # 'bar'
+            ## 2019 ##
+    # plot_type_4A = 'Individual'
+    # number_of_months_in_2019 = len(DAILY_MEAN_2019)
+    # for x in range(0, number_of_months_in_2019 - 1): #-1 to line up with 
+    #     plotTitle = str(NE_WATER_MONTHS[x]) + ' 2019 DAILY MEAN CONSUMPTION'
+    #     Plotter(DAILY_MEAN_2019[x], TITLE = plotTitle , PLOTTYPE = plot_type_4A) #daily average
 
-    #call different plotter functions to plot different types of plots for different data
-    #TODO: Make the plotter functions more universal
-    # WEEKLY_MEDIAN_2019[month].to_csv('MAR MEAN.csv')
-    #2019
-    # Plotter(DAILY_MEAN_2019[month], TITLE = PLOT_TITLE_A, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
-    # Plotter(TEST[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
-    Plotter(WEEKLY_MEDIAN_2019[month], TITLE = PLOT_TITLE_B, PLOTTYPE = plot_type, X_LABEL = x_label, Y_LABEL = y_label) #daily average
+            ## 2020 ##
+    # plot_type_4B = 'Individual'
+    # number_of_months_in_2020 = len(DAILY_MEAN_2020)
+    # for x in range(0, number_of_months_in_2020 - 1): #-1 to line up with 
+    #     plotTitle = str(NE_WATER_MONTHS[x]) + ' 2020 DAILY MEAN CONSUMPTION'
+    #     Plotter(DAILY_MEAN_2020[x], TITLE = plotTitle , PLOTTYPE = plot_type_4B) #daily average
+        
+    ## STEP 4B - WEEKLY AVERAGING PLOTS ##
+
+            ## 2019 ##    
+    # plot_type_4C = 'Individual'
+    # number_of_months_in_2019 = len(WEEKLY_MEDIAN_2019)
+    # for x in range(0, number_of_months_in_2019 - 1): #-1 to stop out of bounds
+    #     plotTitle = str(NE_WATER_MONTHS[x]) + ' 2019 WEEKLY MEDIAN CONSUMPTION'
+    #     Plotter(WEEKLY_MEDIAN_2019[x], TITLE = plotTitle , PLOTTYPE = plot_type_4C) #Weekly average
+
+            ## 2020 ##    
+    # plot_type_4D = 'Individual'
+    # number_of_months_in_2020 = len(WEEKLY_MEDIAN_2020)
+    # for x in range(0, number_of_months_in_2020 - 1): #-1 to stop out of bounds
+    #     plotTitle = str(NE_WATER_MONTHS[x]) + ' 2020 WEEKLY MEDIAN CONSUMPTION'
+    #     Plotter(WEEKLY_MEDIAN_2020[x], TITLE = plotTitle , PLOTTYPE = plot_type_4D) #Weekly average
 
     return #nothing
 
