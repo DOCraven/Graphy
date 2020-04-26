@@ -203,6 +203,11 @@ def Plotter(df, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYP
         fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE)
     elif PLOTTYPE == 'Bar':
         fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'bar')
+    elif PLOTTYPE == 'Histogram':
+        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'histogram')
+    elif PLOTTYPE == 'Box':
+        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'box')
+
     
     else:
         print('Incorrect Plot Type')
@@ -220,7 +225,7 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
     Year = ('2019', '2020')
     # Location = ('NEW', "External") # RESERVED FOR FUTURE ISE - 
     Interval = ('Daily', 'Weekly')
-    Plot = ('Subplot', 'Individual')
+    Plot = ('Subplot', 'Individual', 'Bar',  'Histogram', 'Box')
     NE_WATER_MONTHS = {10: 'JAN', 11: 'FEB', 0: 'MAR', 1: 'APR', 2: 'MAY', 3: 'JUN', 4: 'JUL', 5: 'AUG', 6: 'SEP', 7: 'OCT', 8: 'NOV', 9: 'DEC'}
     plottype = interval = month = year = None #so scope doesnt screw me. Could use a global var, but this is less typing
     location = 'NEW' #separated as currently there is only one location - NE Water
@@ -250,7 +255,7 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
             #         location = 'External'
             # else: 
             #     print('please select a Location')
-            
+
             if values['Interval']: #determine the interval 
                 selectedInterval = values['Interval']
                 #do location logic
@@ -268,6 +273,12 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
                     plottype = 'Subplot'
                 elif selectedPlot == ['Individual']:
                     plottype = 'Individual'
+                elif selectedPlot == ['Bar']:
+                    plottype = 'Bar'
+                elif selectedPlot == ['Histogram']:
+                    plottype = 'Histogram'
+                elif selectedPlot == ['Box']:
+                    plottype = 'Box'
             else: 
                 print('please select a plot type')
                     
