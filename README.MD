@@ -2,15 +2,12 @@
 # RMIT CAPSTONE PROJECT 
 ## NORTH EAST WATER
 
-
-
-
 ## Context
 A program to assist in analysing NEW's industrial energy consumption. Takes `xls` files of interval data, and returns a number of different average load profiles. 
 
 ## Scope
 
-Contains:
+Contains a GUI program that will:
 
 - Code to manipulate data into DataFrames.
 - Code to plot the data nicely.
@@ -25,7 +22,7 @@ Contains:
 1. Run `Graphy.py`. 
 -  either within your IDE (in VS CODE, green triangle in Upper RH corner).
 -  or via the terminal using  `python graphy.py`.
-1. Break stuff.
+1. Use the included GUI to select which months and interval you want to plot.
 
 
 ## Contributing 
@@ -40,8 +37,9 @@ Contains:
 ## Known Issues
 
 
-- The plotter function requires some manual manipulation to get it to plot nicely. 
 - This repo does not place nice with Anaconda. Please use this with a vanilla Python 3.8.x installation.
+- There is minimal error checking involved. 
+- each `xls` must be read twice to avoid a bug. This will be fixed in a later version. 
 
 ## Dependencies
 
@@ -53,3 +51,4 @@ Use `PIP INSTALL [LIBRARY]` to install each dependency.
 -  Cufflinks
 -  Plotly 
 -  matplotlib
+-  PySimpleGUI
