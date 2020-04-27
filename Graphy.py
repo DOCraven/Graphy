@@ -45,6 +45,7 @@ import matplotlib.pyplot as plt
 import datetime as dt
 from calendar import day_name
 import PySimpleGUI as sg
+# import constant
 
 
 
@@ -88,7 +89,7 @@ def DailyAverage(monthly_data):
         dailyAverage.append(monthly_data[months].groupby([monthly_data[months].index.hour, monthly_data[months].index.minute]).mean()) #sum each days demand, returns the mean of the hours over the month 
             # https://stackoverflow.com/a/30580906/13181119
     
-    dailyAverage[0].to_csv('1 REFERENCE.csv')
+    # dailyAverage[0].to_csv('1 REFERENCE.csv')
     return dailyAverage
 
 def WeeklyAverage(monthly_data):
@@ -122,7 +123,9 @@ def WeeklyAverage(monthly_data):
     NumberofDataFrames = len(monthly_data)
     # NumberofDataFrames = 2 #for testing 
     for months in  range(0, NumberofDataFrames): # iterate through the list of dataframes
-        #convert datetime object into individual date and time columns
+        #convert datetime object into individual date and time columns\
+        monthly_data[months].reset_index(inplace = True)
+        # monthly_data[months]['TIME'] = monthly_data[months][fullDateColumnName].dt.time #splits time, throws it at the end  
         monthly_data[months]['TIME'] = monthly_data[months][fullDateColumnName].dt.time #splits time, throws it at the end  
             ### SOMETIMES ERRORS OUT HERE FOR SOME REASON ###
         
@@ -156,18 +159,16 @@ def WeeklyAverage(monthly_data):
     # WeeklyAverage[0].to_csv('Updated Median.csv') #FOR TESTING
     return WeeklyAverage
 
-def DailySUM(monthly_data): #BROKEN
+def IntervalSUM(monthly_data): #BROKEN
     """
-    Takes 30 minute interval data over the month, and returns a sum for a each day
+    Takes 30 minute interval data over the month, and returns a total sum of all columns
+    ie, 30 columns in, 1 column out
     """
-    SumofDays = [] #average day 
-    columnName = 'Interval End' #name of column that contains Parsed DateTimeObject
-    NumberofDataFrames = len(monthly_data) #How many dataframes are in the given list
+    SumofDays = [] # Average Day from the input
+    NumberofDataFrames = len(monthly_data)
     for months in  range(0, NumberofDataFrames): # sets each DF to have the correct index
-        monthly_data[months] = monthly_data[months].set_index([columnName]) #set the index, as previous DF did not have have an index
-        monthly_data[months].index = pd.to_datetime(monthly_data[months].index, unit='s') # some magic to make it not error out - 
-        SumofDays.append(monthly_data[months].groupby([monthly_data[months].index.hour, monthly_data[months].index.minute]).sum()) #sum each days demand 
-            # https://stackoverflow.com/a/30580906/13181119
+        month_under_calculation = monthly_data[months].sum(axis = 1, skipna = True)
+        SumofDays.append(month_under_calculation)
     
     return SumofDays
 
@@ -182,6 +183,8 @@ def MonthToDaySum(df): #BROKEN
         sampled.append(SUMMED) #append to all 
             
     return sampled
+
+
 
 def Plotter(df, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYPE = 'Subplot'): #this is where things are plotted, will require _some_ manual manipulation until I make it nicer
     """ Plots the given dataframe using cufflinks
@@ -225,20 +228,20 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
     Year = ('2019', '2020')
     # Location = ('NEW', "External") # RESERVED FOR FUTURE ISE - 
     Interval = ('Daily', 'Weekly')
-    Plot = ('Subplot', 'Individual', 'Bar',  'Histogram', 'Box')
+    Plot = ('Individual', 'Bar',  'Histogram', 'Box') #SUBPLOT IS BROKEN - 'Subplot', 
     NE_WATER_MONTHS = {10: 'JAN', 11: 'FEB', 0: 'MAR', 1: 'APR', 2: 'MAY', 3: 'JUN', 4: 'JUL', 5: 'AUG', 6: 'SEP', 7: 'OCT', 8: 'NOV', 9: 'DEC'}
     plottype = interval = month = year = None #so scope doesnt screw me. Could use a global var, but this is less typing
     location = 'NEW' #separated as currently there is only one location - NE Water
     #determine the layout
-    layout = [  [sg.Text('Pick a month to Plot')],
-            # [sg.Listbox(Location, size=(20, len(Location)), key='Location')],
-            [sg.Listbox(Year, size=(20, len(Year)), key='Year')],
-            [sg.Listbox(Months, size=(20, len(Months)), key='Month')],
-            [sg.Listbox(Interval, size=(20, len(Interval)), key='Interval')],
-            [sg.Listbox(Plot, size=(20, len(Plot)), key='Plot Type')],
-            [sg.Button('Plot')]  ]
+    layout = [  [sg.Text('Plotting Options')],
+            # [sg.Text('Pick a Location', size = (12, None)), sg.Listbox(Location, size=(20, len(Location)), key='Location')],
+            [sg.Text('Pick a year', size = (12, None)), sg.Listbox(Year, size=(20, len(Year)), key='Year')],
+            [sg.Text('Pick a Month', size = (12, None)), sg.Listbox(Months, size=(20, len(Months)), key='Month')],
+            [sg.Text('Pick a Data \nOutput Format', size = (12, None)), sg.Listbox(Interval, size=(20, len(Interval)), key='Interval')],
+            [sg.Text('Pick a Plot Type', size = (12, None)), sg.Listbox(Plot, size=(20, len(Plot)), key='Plot Type')],
+            [sg.Button('Plot'), sg.Button('Exit')]  ]
 
-    window = sg.Window('NEW GRAPHY', layout) #open the window
+    window = sg.Window('NE WATER GRAPHY', layout) #open the window
 
     while True:               # so the window is peristent
         event, values = window.read() #keep waiting for a user input
@@ -350,7 +353,8 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
                     year = 2020
             else: 
                 print('please select a year')
-
+        elif event == 'Exit':
+            window.close()
 
 
 
@@ -403,25 +407,31 @@ def main():
     ## STEP 2 - CALCULATE DAILY AVERAGE PER MONTH ##
     FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
     FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
-    
+
+    # FullIntervalData_2019_WEEKLY = FullIntervalData_2019
+    # FullIntervalData_2020_WEEKLY = FullIntervalData_2020
+
     DAILY_MEAN_2019 = DailyAverage(FullIntervalData_2019)
     DAILY_MEAN_2020 = DailyAverage(FullIntervalData_2020)
    
     #clear variables to avoid some error. Yes it isnt good practice, 
-    FullIntervalData_2019 = None
-    FullIntervalData_2020 = None
+    # FullIntervalData_2019 = None
+    # FullIntervalData_2020 = None
 
 
     ## STEP 3 - CALCULATE WEEKLY AVERAGE PER MONTH ##
-    FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
-    FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
+    # FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
+    # FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
 
     WEEKLY_MEDIAN_2019 = WeeklyAverage(FullIntervalData_2019)
     WEEKLY_MEDIAN_2020 = WeeklyAverage(FullIntervalData_2020) #inconsistent error, not sure why
     
+    ## STEP 4 - CALCULATE SUM OF ALL PLANTS
+
+    # FullSummedData_2019 = IntervalSUM(FullIntervalData_2019)
+    # FullSummedData_2020 = IntervalSUM(FullIntervalData_2020)
     
-    
-    ### STEP 4 - PLOTTING GRAPHS ###
+    ### STEP 99 - PLOTTING GRAPHS ###
     GUI(DAILY_MEAN_2019, DAILY_MEAN_2020, WEEKLY_MEDIAN_2019, WEEKLY_MEDIAN_2020)
     ## STEP 4A - DAILY AVERAGING PLOTS ##
     
