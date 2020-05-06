@@ -12,6 +12,7 @@
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html#visualization-scatter-matrix
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases%3E - frequency alias
+    
 
     # https://pandas-docs.github.io/pandas-docs-travis/user_guide/groupby.html # GROUPYBY DATA FOR DOING STUFF ON MULTINDEX STUFF
 
@@ -41,6 +42,7 @@
 import pandas as pd
 import datetime as dt
 import cufflinks as cf
+import numpy as np
 import matplotlib.pyplot as plt
 import datetime as dt
 from calendar import day_name
@@ -50,6 +52,38 @@ import PySimpleGUI as sg
 
 
 ### FUNCTIONS ###
+
+def dataJoiner(Full_df, incomplete_df):
+    """
+    function to join merge a smaller dataframe to a larger on, on a common index 
+    """
+    Index_Name = 'Interval End'
+    finalDF = []
+    
+    NumberofDataFrames = len(Full_df)
+    for x in  range(0, NumberofDataFrames):
+        
+        MergedDF = pd.merge(Full_df[x], incomplete_df[x], how = 'outer', on = Index_Name) #merges two dataframes on consistent "Interval End" names 
+        # https://realpython.com/pandas-merge-join-and-concat/#pandas-merge-combining-data-on-common-columns-or-indices
+        MergedDF.interpolate(method = 'polynomial', order = 2, inplace = True) #use linear interpolation to fill in the blank places
+        finalDF.append(MergedDF)
+    
+    return finalDF
+
+def Resampler_30MIN(incorrect_interval_df): #probably useless
+    """ 
+    Resamples interval dataframe from whatever to 30 minute intervals 
+    """
+    Correct_Interval_DataFrame = [] # Average Day from the input
+    columnName = 'Interval End' #name of column that contains Parsed DateTimeObject
+    NumberofDataFrames = len(incorrect_interval_df)
+    for months in  range(0, NumberofDataFrames):
+        Correct_Interval_DataFrame.append()
+        df.set_index(columnName).resample('H').pad()
+
+
+
+    return Correct_Interval_DataFrame
 
 def xlsxReader(xls_file_path): 
     """reads a given file (xls_file_path) and returns a list of DataFrames split into months and weeks
@@ -365,36 +399,54 @@ def main():
     ## VARS ##
     startMSG = ('This code takes about a minute to run\nPlease be patient\n\n\n')
     print(startMSG)
-
+        # consumption data
     Interval_data_2018_file_name = '2018_NE_WATER_EXTERNAL_LOAD.xlsx' #2018 data
     Interval_data_2019_file_name = '2019_NE_WATER_EXTERNAL_LOAD.xlsx' #2019 data
     Interval_data_2020_file_name = '2020_NE_WATER_EXTERNAL_LOAD.xlsx' #2020 data
     
-        ## READING XLS, change to pick which year
-    
+        #solar data - currently dummy data
+    Solar_data_2018_file_name = 'SOLAR_2018_DUMMY.xlsx'
     Solar_data_2019_file_name = 'SOLAR_2019_DUMMY.xlsx'
+    Solar_data_2020_file_name = 'SOLAR_2020_DUMMY.xlsx'
        
     ## STEP 1 - READ XLSX DATA ##
+        # Load Data
     FullIntervalData_2018 = xlsxReader(Interval_data_2018_file_name) #split into months, access via indexing 
     print('Read 2018 Data')
     FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
     print('Read 2019 Data')
     FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
     print('Read 2020 Data')
-    # FullSolarData_2019 = xlsxReader(Solar_data_2019_file_name)
-    # # FullSolarData_2020 = FullSolarData_2019.iloc[2] = 0
 
-    ## STEP 2 - CALCULATE DAILY AVERAGE PER MONTH ##
-    DAILY_MEAN_2018 = DailyAverage(FullIntervalData_2018)
-    DAILY_MEAN_2019 = DailyAverage(FullIntervalData_2019)
-    DAILY_MEAN_2020 = DailyAverage(FullIntervalData_2020)
+        #solar data
+    FullSolarData_2018 = xlsxReader(Solar_data_2018_file_name)
+    FullSolarData_2019 = xlsxReader(Solar_data_2019_file_name)
+    FullSolarData_2020 = xlsxReader(Solar_data_2020_file_name)
+    
+
+    ## STEP 2 - RESAMPLE solar data from HOURLY to Half Hourly 
+    #TODO: Build this function
+    # ResampledSolarData_2018 = Resampler_30MIN(FullSolarData_2018)
+    # ResampledSolarData_2019 = Resampler_30MIN(FullSolarData_2019)
+    # ResampledSolarData_2020 = Resampler_30MIN(FullSolarData_2020)
+
+    ## STEP 3 - CONCAT SOLAR DATA ONTO BACK OF RELEVENT YEAR LOAD DATA ##
+    #TODO: Build this function
+    FUll_2018_EXTERNAL_DATA = dataJoiner(FullIntervalData_2018, FullSolarData_2018)
+    FUll_2019_EXTERNAL_DATA = dataJoiner(FullIntervalData_2019, FullSolarData_2019)
+    FUll_2020_EXTERNAL_DATA = dataJoiner(FullIntervalData_2020, FullSolarData_2020)
+
+    ## STEP 2A - CALCULATE DAILY AVERAGE PER MONTH - load data ## - without SOLAR 
+    DAILY_MEAN_2018 = DailyAverage(FUll_2018_EXTERNAL_DATA)
+    DAILY_MEAN_2019 = DailyAverage(FUll_2019_EXTERNAL_DATA)
+    DAILY_MEAN_2020 = DailyAverage(FUll_2020_EXTERNAL_DATA)
     
 
 
     ## STEP 3 - CALCULATE WEEKLY AVERAGE PER MONTH ##
-    WEEKLY_MEDIAN_2018 = WeeklyAverage(FullIntervalData_2018)
-    WEEKLY_MEDIAN_2019 = WeeklyAverage(FullIntervalData_2019)
-    WEEKLY_MEDIAN_2020 = WeeklyAverage(FullIntervalData_2020)
+    WEEKLY_MEDIAN_2018 = WeeklyAverage(FUll_2018_EXTERNAL_DATA)
+    WEEKLY_MEDIAN_2019 = WeeklyAverage(FUll_2019_EXTERNAL_DATA)
+    WEEKLY_MEDIAN_2020 = WeeklyAverage(FUll_2020_EXTERNAL_DATA)
     
     ## STEP 4 - CALCULATE SUM OF ALL PLANTS
 
