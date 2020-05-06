@@ -53,8 +53,8 @@ from calendar import day_name
 import PySimpleGUI as sg
 
 #external explicit function files
-from GUI_fcn import Plotter, GUI
-from UTILS_fcn import dataJoiner, xlsxReader
+from fcn_GUI import Plotter, GUI
+from fcn_UTILS import dataJoiner, xlsxReader
 
 ### FUNCTIONS ###
 def DailyAverage(monthly_data):
