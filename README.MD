@@ -42,10 +42,13 @@ Contains a GUI program that will:
 
 ## Dependencies
 
+There are 2 accompanying files required in order for this program to work
+-  `GUI_fcn,py`
+-  `UTILS_fcn.py`
+
 Use `PIP INSTALL [LIBRARY]` to install each dependency. 
 
 -  Python 3.8.x
-
 -  Pandas
 -  Cufflinks
 -  Plotly 
