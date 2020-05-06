@@ -39,7 +39,6 @@ Contains a GUI program that will:
 
 - This repo does not place nice with Anaconda. Please use this with a vanilla Python 3.8.x installation.
 - There is minimal error checking involved. 
-- each `xls` must be read twice to avoid a bug. This will be fixed in a later version. 
 
 ## Dependencies
 
@@ -52,3 +51,4 @@ Use `PIP INSTALL [LIBRARY]` to install each dependency.
 -  Plotly 
 -  matplotlib
 -  PySimpleGUI
+-  Numpy
