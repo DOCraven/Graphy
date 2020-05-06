@@ -184,8 +184,6 @@ def MonthToDaySum(df): #BROKEN
             
     return sampled
 
-
-
 def Plotter(df, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYPE = 'Subplot'): #this is where things are plotted, will require _some_ manual manipulation until I make it nicer
     """ Plots the given dataframe using cufflinks
     Will require manual manipulation
@@ -239,7 +237,7 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
             [sg.Text('Pick a Month', size = (12, None)), sg.Listbox(Months, size=(20, len(Months)), key='Month')],
             [sg.Text('Pick a Data \nOutput Format', size = (12, None)), sg.Listbox(Interval, size=(20, len(Interval)), key='Interval')],
             [sg.Text('Pick a Plot Type', size = (12, None)), sg.Listbox(Plot, size=(20, len(Plot)), key='Plot Type')],
-            [sg.Button('Plot'), sg.Button('Exit')]  ]
+            [sg.Button('Plot'), sg.Button('Exit')]  ] #sg.Button('Save .CSV'), for future addon
 
     window = sg.Window('NE WATER GRAPHY', layout) #open the window
 
@@ -247,18 +245,7 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
         event, values = window.read() #keep waiting for a user input
         if event is None:
             break
-        if event == 'Plot': #ie, plot button is pushed, so execute
-            
-            # if values['Location']: #determine the location - currently bypassed in this version - reserved for future usage
-            #     selectedLocation = values['Location']
-            #     #do location logic
-            #     if selectedLocation == ['NEW']: 
-            #         location = 'NEW'
-            #     elif selectedLocation == ['External']:
-            #         location = 'External'
-            # else: 
-            #     print('please select a Location')
-
+        if event == 'Plot': #ie, plot button is pushed, so plot the selected time/date/average
             if values['Interval']: #determine the interval 
                 selectedInterval = values['Interval']
                 #do location logic
@@ -353,15 +340,13 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
                     year = 2020
             else: 
                 print('please select a year')
-        elif event == 'Exit':
+        elif event == 'Exit': #ie, exit button is pushed so quit 
             window.close()
 
 
 
-        ### FOR TESTING
-        # print('You are plotting ' + str(interval) + ' data from ' + NE_WATER_MONTHS[month] + ' ' +  str(year) + ' for the ' + str(location) + 'in a plot type of ' + str(plottype)) # FOR TESTING
-
-        if location == 'NEW' or location == 'External': #reserved for future usage
+        ### ONLY PLOTTING DATA ###
+        if location == 'NEW' or location == 'External': #location tag reserved for future usage
                     ## 2019 DAILY ##
             if interval == 'Daily' and year == 2019: 
                 plotTitle = str(NE_WATER_MONTHS[month]) + ' 2019 DAILY MEAN CONSUMPTION'
@@ -383,11 +368,10 @@ def GUI(DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2019 = Non
                 Plotter(WEEKLY_MEDIAN_2020[month], TITLE = plotTitle , PLOTTYPE = plottype) #Weekly average
             else: #error
                 print('Please select Interval or Year')
-
-
-
+            
+            
         
-
+   
     window.close()
 
     return #nothing   
@@ -402,11 +386,13 @@ def main():
     Interval_data_2020_file_name = 'Large Market Interval Data - March 01 2019 -March 01 2020.xls' #2019/20 data
     
         ## READING XLS, change to pick which year
-    
+    # Solar_data_2019_file_name = 'SOLAR_2019_DUMMY.xlsx'
        
     ## STEP 2 - CALCULATE DAILY AVERAGE PER MONTH ##
     FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
     FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
+
+    # FullSolarData_2019 = xlsxReader(Solar_data_2019_file_name)
 
     # FullIntervalData_2019_WEEKLY = FullIntervalData_2019
     # FullIntervalData_2020_WEEKLY = FullIntervalData_2020
