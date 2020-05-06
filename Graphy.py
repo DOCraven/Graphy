@@ -47,8 +47,6 @@ import matplotlib.pyplot as plt
 import datetime as dt
 from calendar import day_name
 import PySimpleGUI as sg
-# import constant
-
 
 
 ### FUNCTIONS ###
@@ -70,32 +68,13 @@ def dataJoiner(Full_df, incomplete_df):
     
     return finalDF
 
-def Resampler_30MIN(incorrect_interval_df): #probably useless
-    """ 
-    Resamples interval dataframe from whatever to 30 minute intervals 
-    """
-    Correct_Interval_DataFrame = [] # Average Day from the input
-    columnName = 'Interval End' #name of column that contains Parsed DateTimeObject
-    NumberofDataFrames = len(incorrect_interval_df)
-    for months in  range(0, NumberofDataFrames):
-        Correct_Interval_DataFrame.append()
-        df.set_index(columnName).resample('H').pad()
-
-
-
-    return Correct_Interval_DataFrame
-
 def xlsxReader(xls_file_path): 
-    """reads a given file (xls_file_path) and returns a list of DataFrames split into months and weeks
+    """reads a given file (xls_file_path) and returns a list of DataFrames split into months
     Access said dataframe via indexing
     ie, JAN = 0
         FEB = 1
         ...
         DEC = 11
-        WEEK 1 = 0
-        WEEK 2 = 1
-        ...
-        WEEK 52 = 51
     """
     ### STEP 1 -  read the data without index files
     data = pd.read_excel(xls_file_path, parse_dates = True, index_col = None) #reads entire df and parses dates without creating an index
@@ -117,10 +96,10 @@ def DailyAverage(monthly_data):
     for months in  range(0, NumberofDataFrames): # sets each DF to have the correct index
         monthly_data[months] = monthly_data[months].set_index([columnName]) #set the index, as previous DF did not have have an index
         monthly_data[months].index = pd.to_datetime(monthly_data[months].index, unit='s') # some magic to make it not error out - 
-        dailyAverage.append(monthly_data[months].groupby([monthly_data[months].index.hour, monthly_data[months].index.minute]).mean()) #sum each days demand, returns the mean of the hours over the month 
+        dailyAverage.append(monthly_data[months].groupby([monthly_data[months].index.hour, monthly_data[months].index.minute]).mean()) #sum each days demand, 
+        #     returns the mean of the hours over the month 
             # https://stackoverflow.com/a/30580906/13181119
     
-    # dailyAverage[0].to_csv('1 REFERENCE.csv')
     return dailyAverage
 
 def WeeklyAverage(monthly_data):
@@ -129,54 +108,32 @@ def WeeklyAverage(monthly_data):
     30 days in, 7 day out
     as a list of dataframes  
     """
-    ## NOTES ##
-    # using NEW data, the year starts in March, thus 
-    # MAR = 0
-    # APR = 1
-    # MAY = 2
-    # JUN = 3
-    # JUL = 4
-    # AUG = 5
-    # SEP = 6
-    # OCT = 7
-    # NOV = 8
-    # DEC = 9
-    # JAN = 10
-    # FEB = 11
-
     ## VARS
-    
-   
     fullDateColumnName = 'Interval End' #name of column that contains Parsed DateTimeObject
     WeeklyAverage = []
     day_index = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] #needed for sorting the dataframe into specific days
+    
     # Convert monthly datatime into NAME OF DAY and TIME 
     NumberofDataFrames = len(monthly_data)
-    # NumberofDataFrames = 2 #for testing 
+    
     for months in  range(0, NumberofDataFrames): # iterate through the list of dataframes
-        #convert datetime object into individual date and time columns\
-        monthly_data[months].reset_index(inplace = True)
-        # monthly_data[months]['TIME'] = monthly_data[months][fullDateColumnName].dt.time #splits time, throws it at the end  
+        monthly_data[months].reset_index(inplace = True) #remove index to stop it from erroring out with INDEX_ERROR
         monthly_data[months]['TIME'] = monthly_data[months][fullDateColumnName].dt.time #splits time, throws it at the end  
-            ### SOMETIMES ERRORS OUT HERE FOR SOME REASON ###
-        
-        #create temp holding dataframes so they can be inserted into the front of the dataframe
-        time_temp =  monthly_data[months]['TIME'] #creates new dataframe called TIME
+            
+        time_temp =  monthly_data[months]['TIME'] #creates new dataframe called TIME for each iteration through the for loop
 
-        # move the DATE and TIME columns to the front
         monthly_data[months].drop(labels=['TIME'], axis=1,inplace = True) #drops the DATE and TIME from the end of the dataframe
         monthly_data[months].insert(0, 'TIME', time_temp) #inserts TIME at the beginning of the dataframe
-       
             # https://stackoverflow.com/a/25122293/13181119
         
-        # get the DAY NAME from datetime object
-        monthly_data[months]['DAY'] = monthly_data[months][fullDateColumnName].dt.day_name()
+        monthly_data[months]['DAY'] = monthly_data[months][fullDateColumnName].dt.day_name() # get the DAY NAME from datetime object (ie, MONDAY, TUESDAY etc)
             # https://stackoverflow.com/a/30222759/13181119
+
         dayofweek_temp = monthly_data[months]['DAY'] #new dataframe of day names, to replace DATE with
+        
         monthly_data[months].drop(labels=['DAY', fullDateColumnName], axis=1,inplace = True) #drops the DAY column from the end of the dataframe
         monthly_data[months].insert(0, 'DAY', dayofweek_temp) #inserts DAY_OF_WEEK at the beginning of the dataframe
-        # monthly_data[months].set_index(['DAY', 'TIME'], inplace = True) #create a multi index for future things - breaks next bit of function
-
+        
     ## DO SOME FANCY MATHS HERE ##
     for months in  range(0, NumberofDataFrames): #iterate through each month
         sorted = monthly_data[months] #temp dataframe to make sorting it easier 
@@ -186,52 +143,30 @@ def WeeklyAverage(monthly_data):
         median = sorted.groupby(['DAY', 'TIME']).median() #find the median grouping by DAY and TIME
         WeeklyAverage.append(median) #append to a list of dataframes, and return this to the main function
     
-    
-    # WeeklyAverage[0].to_csv('Updated Median.csv') #FOR TESTING
     return WeeklyAverage
 
-def IntervalSUM(monthly_data): #BROKEN
-    """
-    Takes 30 minute interval data over the month, and returns a total sum of all columns
-    ie, 30 columns in, 1 column out
-    """
-    SumofDays = [] # Average Day from the input
-    NumberofDataFrames = len(monthly_data)
-    for months in  range(0, NumberofDataFrames): # sets each DF to have the correct index
-        month_under_calculation = monthly_data[months].sum(axis = 1, skipna = True)
-        SumofDays.append(month_under_calculation)
-    
-    return SumofDays
-
-def MonthToDaySum(df): #BROKEN
+def MonthToDaySum(df):
     """
     Sums up the entire DF for the month, returns a total energy consumption for each day of the month, as a % of the highest load in each site
     """
     sampled = [] #empty array
-    for x in range (0, 12): # sets each DF to have the correct index
-        SUMMED = df[x].resample("1D").sum() #sum each days demand 
-        SUMMED = df[x].apply(lambda x: x.div(x.max())) #magic lambda function from Sean, divdes X by the max of X, making it into percentages
+    NumberofDataFrames = len(monthly_data)
+    
+    for months in  range(0, NumberofDataFrames): # iterate through the list of dataframes
+        SUMMED = df[months].resample("1D").sum() #sum each days demand 
+        SUMMED = df[months].apply(lambda x: x.div(x.max())) #magic lambda function from Sean, divdes X by the max of X, making it into percentages
         sampled.append(SUMMED) #append to all 
             
     return sampled
 
 def Plotter(df, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYPE = 'Subplot'): #this is where things are plotted, will require _some_ manual manipulation until I make it nicer
-    """ Plots the given dataframe using cufflinks
-    Will require manual manipulation
+    """ 
+    Plots the given dataframe using cufflinks
     """
     ## determing the rows/columns for subplots, change this to output for your screen
-    # for portrait screens, 17x2 is best
-    # for landscape screens, 2x17 is best
-    rows = 17
-    columns = 2
- 
-    #individual plot
-    
     # plotting types
-    if PLOTTYPE == 'Subplot':
-        fig = df.iplot(asFigure=True, subplots=True, shape=(rows, columns), shared_xaxes=True, fill=True, xTitle = X_LABEL, yTitle = Y_LABEL, title = TITLE) #17 2 is best for portrait monitors, 4 9 is best for landscape monitors
     #nice looking individual plot
-    elif PLOTTYPE == 'Individual':
+    if PLOTTYPE == 'Individual':
         fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE)
     elif PLOTTYPE == 'Bar':
         fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'bar')
@@ -239,30 +174,28 @@ def Plotter(df, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYP
         fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'histogram')
     elif PLOTTYPE == 'Box':
         fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'box')
-
-    
     else:
         print('Incorrect Plot Type')
 
-
-    fig.show()
+    fig.show() #show the figure in the default web browser
 
     return #nothing
 
 def GUI(DAILY_MEAN_2018 = None, DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, WEEKLY_MEDIAN_2018 = None, WEEKLY_MEDIAN_2019 = None, WEEKLY_MEDIAN_2020 = None): 
-    """ a simple GUI to make plotting easier
+    """ 
+    A simple GUI to make plotting easier and interactive 
     """
     ## VARS
     Months = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
     Year = ('2018', '2019', '2020')
-    # Location = ('NEW', "External") # RESERVED FOR FUTURE ISE - 
     Interval = ('Daily', 'Weekly')
-    Plot = ('Individual', 'Bar',  'Histogram', 'Box') #SUBPLOT IS BROKEN - 'Subplot', 
-    NE_WATER_MONTHS = {0: 'JAN', 1: 'FEB', 2: 'MAR', 3: 'APR', 4: 'MAY', 5: 'JUN', 6: 'JUL', 7: 'AUG', 8: 'SEP', 9: 'OCT', 10: 'NOV', 11: 'DEC'}
+    Plot = ('Individual', 'Bar',  'Histogram', 'Box')
+    
+    NE_WATER_MONTHS = {0: 'JAN', 1: 'FEB', 2: 'MAR', 3: 'APR', 4: 'MAY', 5: 'JUN', 6: 'JUL', 7: 'AUG', 8: 'SEP', 9: 'OCT', 10: 'NOV', 11: 'DEC'} #dict for accessing months
     plottype = interval = month = year = None #so scope doesnt screw me. Could use a global var, but this is less typing
-    #determine the layout
+    
+    #determining the layout
     layout = [  [sg.Text('Plotting Options')],
-            # [sg.Text('Pick a Location', size = (12, None)), sg.Listbox(Location, size=(20, len(Location)), key='Location')],
             [sg.Text('Pick a year', size = (12, None)), sg.Listbox(Year, size=(20, len(Year)), key='Year')],
             [sg.Text('Pick a Month', size = (12, None)), sg.Listbox(Months, size=(20, len(Months)), key='Month')],
             [sg.Text('Pick a Data \nOutput Format', size = (12, None)), sg.Listbox(Interval, size=(20, len(Interval)), key='Interval')],
@@ -271,7 +204,7 @@ def GUI(DAILY_MEAN_2018 = None, DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, 
 
     window = sg.Window('NE WATER GRAPHY', layout) #open the window
 
-    while True:               # so the window is peristent
+    while True: # so the window is peristent
         event, values = window.read() #keep waiting for a user input
         if event is None:
             break
@@ -303,8 +236,6 @@ def GUI(DAILY_MEAN_2018 = None, DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, 
                 print('please select a plot type')
                     
             #do month logic
-            ## NEW DATA MONTH ORDERING (ie, JAN = 10, FEB = 11, MAR = 0)
-            
             if values['Month']:    # Determine the month selected
                 selectedMonth = values['Month']
                 
@@ -332,9 +263,9 @@ def GUI(DAILY_MEAN_2018 = None, DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, 
                     month = 10
                 elif selectedMonth == ['December']:
                     month = 11
-            ## TRADITIONAL MONTH ORDERING (ie, JAN 0, FEB = 2 etc)
             else: 
                 print('please select a month')
+            
             #do yearly logic
             if values['Year']:  #determine the year
                 selectedYear = values['Year'] 
@@ -347,13 +278,12 @@ def GUI(DAILY_MEAN_2018 = None, DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, 
                     year = 2020
             else: 
                 print('please select a year')
+        
         elif event == 'Exit': #ie, exit button is pushed so quit 
             window.close()
 
-
-
         ### ONLY PLOTTING DATA ###
-        ## 2019 DAILY ##
+                ## 2019 DAILY ##
         if interval == 'Daily' and year == 2018: 
             plotTitle = str(NE_WATER_MONTHS[month]) + ' 2018 DAILY MEAN CONSUMPTION'
             Plotter(DAILY_MEAN_2018[month], TITLE = plotTitle , PLOTTYPE = plottype) #daily average
@@ -423,36 +353,21 @@ def main():
     FullSolarData_2019 = xlsxReader(Solar_data_2019_file_name)
     FullSolarData_2020 = xlsxReader(Solar_data_2020_file_name)
     
-
-    ## STEP 2 - RESAMPLE solar data from HOURLY to Half Hourly 
-    #TODO: Build this function
-    # ResampledSolarData_2018 = Resampler_30MIN(FullSolarData_2018)
-    # ResampledSolarData_2019 = Resampler_30MIN(FullSolarData_2019)
-    # ResampledSolarData_2020 = Resampler_30MIN(FullSolarData_2020)
-
-    ## STEP 3 - CONCAT SOLAR DATA ONTO BACK OF RELEVENT YEAR LOAD DATA ##
-    #TODO: Build this function
+    ## STEP 2 - CONCAT SOLAR DATA ONTO BACK OF RELEVENT YEAR LOAD DATA AND INTERPOLATE NaN if required ##
     FUll_2018_EXTERNAL_DATA = dataJoiner(FullIntervalData_2018, FullSolarData_2018)
     FUll_2019_EXTERNAL_DATA = dataJoiner(FullIntervalData_2019, FullSolarData_2019)
     FUll_2020_EXTERNAL_DATA = dataJoiner(FullIntervalData_2020, FullSolarData_2020)
 
-    ## STEP 2A - CALCULATE DAILY AVERAGE PER MONTH - load data ## - without SOLAR 
+    ## STEP 3 - CALCULATE DAILY AVERAGE PER MONTH - load data ## - without SOLAR 
     DAILY_MEAN_2018 = DailyAverage(FUll_2018_EXTERNAL_DATA)
     DAILY_MEAN_2019 = DailyAverage(FUll_2019_EXTERNAL_DATA)
     DAILY_MEAN_2020 = DailyAverage(FUll_2020_EXTERNAL_DATA)
     
-
-
-    ## STEP 3 - CALCULATE WEEKLY AVERAGE PER MONTH ##
+    ## STEP 4 - CALCULATE WEEKLY AVERAGE PER MONTH ##
     WEEKLY_MEDIAN_2018 = WeeklyAverage(FUll_2018_EXTERNAL_DATA)
     WEEKLY_MEDIAN_2019 = WeeklyAverage(FUll_2019_EXTERNAL_DATA)
     WEEKLY_MEDIAN_2020 = WeeklyAverage(FUll_2020_EXTERNAL_DATA)
-    
-    ## STEP 4 - CALCULATE SUM OF ALL PLANTS
 
-    # FullSummedData_2019 = IntervalSUM(FullIntervalData_2019)
-    # FullSummedData_2020 = IntervalSUM(FullIntervalData_2020)
-    
     ### STEP N+1 - PLOTTING GRAPHS ###
     GUI(DAILY_MEAN_2018, DAILY_MEAN_2019, DAILY_MEAN_2020, WEEKLY_MEDIAN_2018, WEEKLY_MEDIAN_2019, WEEKLY_MEDIAN_2020)
     
