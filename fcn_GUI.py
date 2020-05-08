@@ -41,12 +41,14 @@ def GUI(DAILY_MEAN_2018 = None, DAILY_MEAN_2019 = None, DAILY_MEAN_2020 = None, 
     Year = ('2018', '2019', '2020')
     Interval = ('Daily', 'Weekly')
     Plot = ('Individual', 'Bar',  'Histogram', 'Box')
+    Location = ('External', 'WWTP')
     
     NE_WATER_MONTHS = {0: 'JAN', 1: 'FEB', 2: 'MAR', 3: 'APR', 4: 'MAY', 5: 'JUN', 6: 'JUL', 7: 'AUG', 8: 'SEP', 9: 'OCT', 10: 'NOV', 11: 'DEC'} #dict for accessing months
-    plottype = interval = month = year = None #so scope doesnt screw me. Could use a global var, but this is less typing
+    location = plottype = interval = month = year = None #so scope doesnt screw me. Could use a global var, but this is less typing
     
     #determining the layout
-    layout = [  [sg.Text('Plotting Options')],
+    layout = [  [sg.Text('', size = (20, None)), sg.Text('Plotting Options ', size = (20, None))], 
+            [sg.Text('Pick a location', size = (12, None)), sg.Listbox(Location, size=(20, len(Location)), key='Location')],
             [sg.Text('Pick a year', size = (12, None)), sg.Listbox(Year, size=(20, len(Year)), key='Year')],
             [sg.Text('Pick a Month', size = (12, None)), sg.Listbox(Months, size=(20, len(Months)), key='Month')],
             [sg.Text('Pick a Data \nOutput Format', size = (12, None)), sg.Listbox(Interval, size=(20, len(Interval)), key='Interval')],
