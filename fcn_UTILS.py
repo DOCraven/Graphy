@@ -39,3 +39,20 @@ def xlsxReader(xls_file_path):
     
     return months
 
+def intervalResampler(input_df, chosen_interval = 30):
+    """
+    function to change and interpolate to a given interval 
+    """
+    resampledDF = []
+    Index_Name = 'Interval End'
+    NumberofDataFrames = len(input_df)
+    for x in  range(0, NumberofDataFrames):
+        resampling_df = input_df[x] #each month
+        resampling_df.set_index(Index_Name, inplace = True) #set the datetime index 
+        resampling_df.resample('30T').interpolate(method = 'polynomial', order = 2, inplace = True) #interpolate the hourly interval data to 30 mins via linear interpolation   
+        resampling_df.reset_index(inplace = True)
+        resampledDF.append(resampling_df)
+
+    return resampledDF
+
+    
