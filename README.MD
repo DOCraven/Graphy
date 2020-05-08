@@ -12,6 +12,14 @@ Contains a GUI program that will:
 - Code to manipulate data into DataFrames.
 - Code to plot the data nicely.
 
+This program includes NE Water data from External Sites and within WWTP
+
+## VERSION 
+
+Version 1.5.0
+Last Updated: 08MAY20
+
+
 ## How to use
 
 1. Clone the `master` branch. 
@@ -39,12 +47,27 @@ Contains a GUI program that will:
 
 - This repo does not place nice with Anaconda. Please use this with a vanilla Python 3.8.x installation.
 - There is minimal error checking involved. 
+- `WWTP` data is lacking, and thus plotting it will not yield as many results and `EXTERNAL` data. 
+- No solar data appended to `WWTP` plotting. 
+- Solar data is currently placeholder data, and not site specific data. 
+
 
 ## Dependencies
 
 There are 2 accompanying files required in order for this program to work
 -  `GUI_fcn,py`
 -  `UTILS_fcn.py`
+
+There are multiple `xlsx` files in the `/INPUT DATA` folder required for this program to work properly. 
+-  `2018_NE_WATER_EXTERNAL_LOAD.xlsx`
+-  `2019_NE_WATER_EXTERNAL_LOAD.xlsx`
+-  `2020_NE_WATER_EXTERNAL_LOAD.xlsx`
+-  `SOLAR_2018_DUMMY.xlsx`
+-  `SOLAR_2019_DUMMY.xlsx`
+-  `SOLAR_2020_DUMMY.xlsx`
+-  `WWTP_2019_DATA.xlsx`
+-  `WWTP_2020_DATA.xlsx`
+
 
 Use `PIP INSTALL [LIBRARY]` to install each dependency. 
 
