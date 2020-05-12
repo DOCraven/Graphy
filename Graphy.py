@@ -55,6 +55,7 @@ import PySimpleGUI as sg
 #external explicit function files
 from fcn_GUI import Plotter, GUI
 from fcn_UTILS import dataJoiner, xlsxReader, intervalResampler
+from fcn_Solar_Calculator import DaySummation, SolarSlicer 
 
 ### FUNCTIONS ###
 def DailyAverage(monthly_data):
@@ -131,6 +132,32 @@ def MonthToDaySum(df):
             
     return sampled
 
+def SolarOrganiser(monthly_data, startpost = None, finishpost = None):
+    """
+    Returns list of list of list of  the total sum of kWh per dataframe, total sum of kWh between start- and finish post, and percentage of start/finish post per month
+    """ 
+    ## LIST OVERVIEW ##
+    #TBA
+    
+    ### Step 1 - sanitize the data
+
+    totalsummation = []
+    totalsliced = []
+    slicedsummation = []
+  
+    NumberofDataFrames = len(monthly_data)
+    start_post = 18
+    finish_post = 34
+    
+    for x in range(0, NumberofDataFrames): # iterate through the list of dataframes
+        totalsummation.append(DaySummation(monthly_data[x]))
+        totalsliced.append(SolarSlicer(monthly_data[x], startpost = start_post, finishpost = finish_post))
+
+
+    print('HOLD')
+    return #nothing
+
+
 def main():
     """ Main fcn"""
     plt.close('all')
@@ -159,59 +186,66 @@ def main():
        
     ## STEP 1 - READ XLSX DATA ##
         # Load Data
-    FullIntervalData_2018 = xlsxReader(Interval_data_2018_file_name) #split into months, access via indexing 
+    # FullIntervalData_2018 = xlsxReader(Interval_data_2018_file_name) #split into months, access via indexing 
     print('Read 2018 External Data')
     FullIntervalData_2019 = xlsxReader(Interval_data_2019_file_name) #split into months, access via indexing 
     print('Read 2019 External Data')
-    FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
+    # FullIntervalData_2020 = xlsxReader(Interval_data_2020_file_name) #split into months, access via indexing 
     print('Read 2020 External Data')
 
     #     #solar data
-    FullSolarData_2018 = xlsxReader(Solar_data_2018_file_name)
+    # FullSolarData_2018 = xlsxReader(Solar_data_2018_file_name)
     FullSolarData_2019 = xlsxReader(Solar_data_2019_file_name)
-    FullSolarData_2020 = xlsxReader(Solar_data_2020_file_name)
+    # FullSolarData_2020 = xlsxReader(Solar_data_2020_file_name)
     print('Read Solar Data')
         #WWTP DATA
     WWTP_Interval_Data_2019 = xlsxReader(WWTP_interval_data_2019_file_name)
-    WWTP_Interval_Data_2020 = xlsxReader(WWTP_interval_data_2020_file_name)
+    # WWTP_Interval_Data_2020 = xlsxReader(WWTP_interval_data_2020_file_name)
     print('Read WWTP Data')
 
     ## STEP 2 - CONCAT SOLAR DATA ONTO BACK OF RELEVENT YEAR LOAD DATA AND INTERPOLATE NaN if required ##
-    FUll_2018_EXTERNAL_DATA = dataJoiner(FullIntervalData_2018, FullSolarData_2018)
+    # FUll_2018_EXTERNAL_DATA = dataJoiner(FullIntervalData_2018, FullSolarData_2018)
     FUll_2019_EXTERNAL_DATA = dataJoiner(FullIntervalData_2019, FullSolarData_2019)
-    FUll_2020_EXTERNAL_DATA = dataJoiner(FullIntervalData_2020, FullSolarData_2020)
+    # FUll_2020_EXTERNAL_DATA = dataJoiner(FullIntervalData_2020, FullSolarData_2020)
 
     ## STEP 3 - Interpolate WWTP data ##
     Full_WWTP_Interval_Data_2019 = intervalResampler(WWTP_Interval_Data_2019) 
-    Full_WWTP_Interval_Data_2020 = intervalResampler(WWTP_Interval_Data_2020) 
+    # Full_WWTP_Interval_Data_2020 = intervalResampler(WWTP_Interval_Data_2020) 
     
     ## STEP 5 - CALCULATE DAILY AVERAGE PER MONTH - load data ## - without SOLAR 
        
         #external
-    DAILY_EXTERNAL_MEAN_2018 = DailyAverage(FUll_2018_EXTERNAL_DATA)
+    # DAILY_EXTERNAL_MEAN_2018 = DailyAverage(FUll_2018_EXTERNAL_DATA)
     DAILY_EXTERNAL_MEAN_2019 = DailyAverage(FUll_2019_EXTERNAL_DATA)
-    DAILY_EXTERNAL_MEAN_2020 = DailyAverage(FUll_2020_EXTERNAL_DATA)
+    # DAILY_EXTERNAL_MEAN_2020 = DailyAverage(FUll_2020_EXTERNAL_DATA)
        
         #internal 
     DAILY_WWTP_MEAN_2019 = DailyAverage(Full_WWTP_Interval_Data_2019)
-    DAILY_WWTP_MEAN_2020 = DailyAverage(Full_WWTP_Interval_Data_2020)
+    # DAILY_WWTP_MEAN_2020 = DailyAverage(Full_WWTP_Interval_Data_2020)
 
 
     ## STEP 6 - CALCULATE WEEKLY AVERAGE PER MONTH ##
     
         #external 
-    WEEKLY_EXTERNAL_MEDIAN_2018 = WeeklyAverage(FUll_2018_EXTERNAL_DATA)
+    # WEEKLY_EXTERNAL_MEDIAN_2018 = WeeklyAverage(FUll_2018_EXTERNAL_DATA)
     WEEKLY_EXTERNAL_MEDIAN_2019 = WeeklyAverage(FUll_2019_EXTERNAL_DATA)
-    WEEKLY_EXTERNAL_MEDIAN_2020 = WeeklyAverage(FUll_2020_EXTERNAL_DATA)
+    # WEEKLY_EXTERNAL_MEDIAN_2020 = WeeklyAverage(FUll_2020_EXTERNAL_DATA)
 
         #wwtp
     WEEKLY_WWTP_MEDIAN_2019 = WeeklyAverage(Full_WWTP_Interval_Data_2019)
-    WEEKLY_WWTP_MEDIAN_2020 = WeeklyAverage(Full_WWTP_Interval_Data_2020)
+    # WEEKLY_WWTP_MEDIAN_2020 = WeeklyAverage(Full_WWTP_Interval_Data_2020)
+
+    ## FOR TESTING 
     
-    
+    ### FOR TESTING 
+    ## STEP 7 - CALCULATE SOLAR DAY
+
+    SolarOrganiser(DAILY_EXTERNAL_MEAN_2019, 18, 34)
+
+    print('hold')
     ### STEP N+1 - PLOTTING GRAPHS ###
     
-    GUI(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020, WEEKLY_EXTERNAL_MEDIAN_2018, WEEKLY_EXTERNAL_MEDIAN_2019, WEEKLY_EXTERNAL_MEDIAN_2020, DAILY_WWTP_MEAN_2019, DAILY_WWTP_MEAN_2020, WEEKLY_WWTP_MEDIAN_2019, WEEKLY_WWTP_MEDIAN_2020) #need to clean up everything I'm passing to this function
+    # GUI(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020, WEEKLY_EXTERNAL_MEDIAN_2018, WEEKLY_EXTERNAL_MEDIAN_2019, WEEKLY_EXTERNAL_MEDIAN_2020, DAILY_WWTP_MEAN_2019, DAILY_WWTP_MEAN_2020, WEEKLY_WWTP_MEDIAN_2019, WEEKLY_WWTP_MEDIAN_2020) #need to clean up everything I'm passing to this function
     
     
 
