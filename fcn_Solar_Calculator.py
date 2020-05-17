@@ -19,8 +19,8 @@ def SolarOrganiser(monthly_data, startpost = None, finishpost = None):
     # except TypeError: 
     #     pass 
     NumberofDataFrames = len(monthly_data)
-    start_post = 18 #0900h
-    finish_post = 35 #1700h
+    start_post = startpost
+    finish_post = finishpost
     
     for x in range(0, NumberofDataFrames): # iterate through the list of dataframes
         Total_Day_Consumption.append(DaySummation(monthly_data[x])) # add all the consumption of load for the entire day

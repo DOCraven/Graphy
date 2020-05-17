@@ -236,8 +236,7 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
     Finish_Time = Start_Time #nasty way to determine output time, user selects input, and then code finds index location of matching input
     Year = ('2018', '2019', '2020')
     MONTHS = {0: 'JAN', 1: 'FEB', 2: 'MAR', 3: 'APR', 4: 'MAY', 5: 'JUN', 6: 'JUL', 7: 'AUG', 8: 'SEP', 9: 'OCT', 10: 'NOV', 11: 'DEC'} #dict for accessing months
-    Start_Post = 0 #initilising here, so scope doesnt screw me
-    Finish_Post = 0 #initilising here, so scope doesnt screw me
+    Start_Post = Finish_Post = selected_Start = selected_Finish = 0 #initilising here, so scope doesnt screw me
     
     layout = [  [sg.Text('', size = (20, None)), sg.Text('Daily Consumption Times ', size = (20, None))], 
             [sg.Text('Pick a year', size = (12, None)), sg.Listbox(Year, size=(20, len(Year)), key='Year')],
@@ -286,11 +285,15 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
             ##LOGIC VARS##
             total_months = 11
             save_folder = 'OUTPUT DATA\\'
+            time_stamp = selected_Start[0] + '__' + selected_finish[0]
+            sanitized_time_stamp = time_stamp.replace(':', '.')
+
+
 
 
         if year == 2018: 
             Sliced_Consumption_Percentage_2018 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2018, Start_Post, Finish_Post) #generate percentage
-            writer = pd.ExcelWriter(save_folder + '2018_NE_WATER_SITE_PERCENTAGE.xlsx', engine='xlsxwriter') #initilise the sheet writer
+            writer = pd.ExcelWriter(save_folder + '2018_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
           
             for x in range (0, total_months): #iterate through each month 
                 Sliced_Consumption_Percentage_2018[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
@@ -299,7 +302,7 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
         elif year == 2019:
             Sliced_Consumption_Percentage_2019 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2019, Start_Post, Finish_Post) #generate percentage
-            writer = pd.ExcelWriter(save_folder + '2019_NE_WATER_SITE_PERCENTAGE.xlsx', engine='xlsxwriter') #initilise the sheet writer
+            writer = pd.ExcelWriter(save_folder + '2019_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
           
             for x in range (0, total_months): #iterate through each month 
                 Sliced_Consumption_Percentage_2019[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
@@ -308,7 +311,7 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
         elif year == 2020:
             Sliced_Consumption_Percentage_2020 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2020, Start_Post, Finish_Post) #generate percentage
-            writer = pd.ExcelWriter(save_folder + '2020_NE_WATER_SITE_PERCENTAGE.xlsx', engine='xlsxwriter') #initilise the sheet writer
+            writer = pd.ExcelWriter(save_folder + '2020_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
 
             for x in range (0, total_months): #iterate through each month 
                 Sliced_Consumption_Percentage_2020[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
@@ -325,3 +328,4 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
 
     return #nothing
+
