@@ -37,7 +37,7 @@ This program will generate a landing page to direct the user to two seperate GUI
 1. Run `Graphy.py`. 
    -  either within your IDE (in VS CODE, green triangle in Upper RH corner).
    -  or via the terminal using  `python graphy.py`.
-1. Use the included GUI to select which months and interval you want to plot.
+1. Use the included GUI landing page to select the various options.
 
 
 ## Contributing 
