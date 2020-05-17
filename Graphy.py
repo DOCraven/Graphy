@@ -53,7 +53,7 @@ from calendar import day_name
 import PySimpleGUI as sg
 
 #external explicit function files
-from fcn_GUI import GRAPH_GUI, GUI_Solar
+from fcn_GUI import GRAPH_GUI, GUI_Solar, GUI_Chooser
 from fcn_UTILS import dataJoiner, xlsxReader, intervalResampler
 from fcn_Solar_Calculator import DaySummation, SolarSlicer 
 
@@ -131,7 +131,6 @@ def MonthToDaySum(df):
         sampled.append(SUMMED) #append to all 
             
     return sampled
-
 
 def main():
     """ Main fcn"""
@@ -214,16 +213,34 @@ def main():
     WEEKLY_WWTP_MEDIAN_2020 = WeeklyAverage(Full_WWTP_Interval_Data_2020)
 
       
-    ### STEP N+1 - PLOTTING GRAPHS ###
-    GUI_Solar(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020) #, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020
+    ### STEP N+1 - PLOTTING GRAPHS VIA GUI STUFF
+
+    GENERATION_HOURS = CONSUMPTION_PROFILES = False #to choose things
+    layout = [  [sg.Text('', size = (20, None)), sg.Text('NE WATER LANDING PAGE ', size = (40, None))], 
+            [sg.Button('GENERATION HOURS'), sg.Button('AVERAGE CONSUMPTION PROFILES'), sg.Button('Exit')]] #Landing page, not made a function so I dont have to pass bulk values to it. Will fix shortly
+
+    window = sg.Window('NE WATER LANDING PAGE', layout) #determine the window layout
     
-    GRAPH_GUI(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020, WEEKLY_EXTERNAL_MEDIAN_2018, WEEKLY_EXTERNAL_MEDIAN_2019, WEEKLY_EXTERNAL_MEDIAN_2020, DAILY_WWTP_MEAN_2019, DAILY_WWTP_MEAN_2020, WEEKLY_WWTP_MEDIAN_2019, WEEKLY_WWTP_MEDIAN_2020) #need to clean up everything I'm passing to this function
-    
+    while True: #persistent window
+        event, values = window.read() #read the GUI events
+
+        if event == 'GENERATION HOURS': #choose to plot hours between user defined points
+            GENERATION_HOURS = True
+        elif event == 'AVERAGE CONSUMPTION PROFILES': #choose to make 
+            CONSUMPTION_PROFILES = True
+        elif event == 'Exit': 
+            window.close() #close the window
+            break #break the persistent loop
+        ## CHOOSING WHAT TO PLOT ##
+        if GENERATION_HOURS: 
+            GUI_Solar(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020) #, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020
+            GENERATION_HOURS = False
+        elif CONSUMPTION_PROFILES: 
+            GRAPH_GUI(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020, WEEKLY_EXTERNAL_MEDIAN_2018, WEEKLY_EXTERNAL_MEDIAN_2019, WEEKLY_EXTERNAL_MEDIAN_2020, DAILY_WWTP_MEAN_2019, DAILY_WWTP_MEAN_2020, WEEKLY_WWTP_MEDIAN_2019, WEEKLY_WWTP_MEDIAN_2020) #need to clean up everything I'm passing to this function
+            CONSUMPTION_PROFILES = False
     
 
-    
-
-    return #nothing
+    return #nothing main
 
 
 
