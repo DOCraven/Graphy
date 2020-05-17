@@ -17,15 +17,16 @@ This program includes NE Water data from External Sites and within WWTP.
 
 ## VERSION 
 
-Version 1.6.1  
-Last Updated: 17MAY20
+Version 1.6.2  
+Last Updated: 18MAY20
 
 
 ## OVERVIEW
 This program will generate a landing page to direct the user to two seperate GUI's. 
 
 1.  The first GUI will generate a percentage of consumption between two user defined hours. This can be viewed as a graph OR saved as a `xlsx` file with multiple sheets for multiple months. The expected output is a percentage (ie, 0-100%)
-1.  The second GUI will plot daily and weekly average load profiles for WWTP and external NE Water loads. Currently there is no option to export as a `xlsx` file. 
+    - The output `xlsx` file can be found in `/OUTPUT DATA`
+1.  The second GUI will plot daily and weekly average load profiles for WWTP and external NE Water loads. Various options exist for assisting in the analysis. Currently there is no option to export as a `xlsx` file. The expected output is a graph. 
 
 ## How to use
 
@@ -35,9 +36,9 @@ This program will generate a landing page to direct the user to two seperate GUI
 1. In Visual Studio Code, open the folder that `Graphy.py` is located in via `CTRL + K + O`.
 1. Ensure the `xls` file is in the root folder (ie, same as `Graphy.py`).
 1. Run `Graphy.py`. 
--  either within your IDE (in VS CODE, green triangle in Upper RH corner).
--  or via the terminal using  `python graphy.py`.
-1. Use the included GUI to select which months and interval you want to plot.
+   -  either within your IDE (in VS CODE, green triangle in Upper RH corner).
+   -  or via the terminal using  `python graphy.py`.
+1. Use the included GUI landing page to select the various options.
 
 
 ## Contributing 
