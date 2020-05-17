@@ -22,7 +22,7 @@ Last Updated: 17MAY20
 
 
 ## OVERVIEW
-This program will generate two graphical user interfaces in a row. 
+This program will generate a landing page to direct the user to two seperate GUI's. 
 
 1.  The first GUI will generate a percentage of consumption between two user defined hours. This can be viewed as a graph OR saved as a `xlsx` file with multiple sheets for multiple months. The expected output is a percentage (ie, 0-100%)
 1.  The second GUI will plot daily and weekly average load profiles for WWTP and external NE Water loads. Currently there is no option to export as a `xlsx` file. 

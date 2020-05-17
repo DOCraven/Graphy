@@ -333,7 +333,10 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
         ## LOGIC GOES HERE ###
 
         save_folder = 'OUTPUT DATA\\'
-        time_stamp = selected_Start[0] + '__' + selected_finish[0]
+        try:
+            time_stamp = selected_Start[0] + '__' + selected_finish[0]
+        except TypeError:
+            time_stamp = 'ERROR'
         sanitized_time_stamp = time_stamp.replace(':', '.')
         
 
@@ -405,4 +408,36 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
     return #nothing
 
-# GUI_Solar()
+
+def GUI_Chooser(): 
+    """GUI Landing Page to choose subsequent GUI"""
+    ### VARS ###
+    GENERATION_HOURS = CONSUMPTION_PROFILES = False #to choose things
+
+    ### LAYOUT ###
+     ### LAYOUT ###
+    layout = [  [sg.Text('', size = (20, None)), sg.Text('NE WATER LANDING PAGE ', size = (40, None))], 
+            [sg.Button('GENERATION HOURS'), sg.Button('AVERAGE CONSUMPTION PROFILES'), sg.Button('Exit')]] #sg.Button('Save .CSV'), for future addon
+
+    window = sg.Window('NE WATER LANDING PAGE', layout) #open the window
+    
+    
+    
+    while True: #persistent window
+        event, values = window.read() #read the GUI events
+
+        if event == 'GENERATION HOURS': 
+            GENERATION_HOURS = True
+
+        if event == 'AVERAGE CONSUMPTION PROFILES': 
+            CONSUMPTION_PROFILES = True
+
+        if event == 'Exit': 
+            window.close()
+
+    return #nothing
+
+
+
+
+# GUI_Chooser()
