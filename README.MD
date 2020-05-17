@@ -12,12 +12,13 @@ Contains a GUI program that will:
 - Code to manipulate data into DataFrames.
 - Code to plot the data nicely.
 
-This program includes NE Water data from External Sites and within WWTP
+This program includes NE Water data from External Sites and within WWTP. 
+
 
 ## VERSION 
 
-Version 1.5.0  
-Last Updated: 08MAY20
+Version 1.6.0  
+Last Updated: 17MAY20
 
 
 ## How to use
@@ -78,3 +79,4 @@ Use `PIP INSTALL [LIBRARY]` to install each dependency.
 -  matplotlib
 -  PySimpleGUI
 -  Numpy
+-  xlsxwriter

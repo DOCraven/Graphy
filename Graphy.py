@@ -53,8 +53,9 @@ from calendar import day_name
 import PySimpleGUI as sg
 
 #external explicit function files
-from fcn_GUI import Plotter, GUI
+from fcn_GUI import GRAPH_GUI, GUI_Solar
 from fcn_UTILS import dataJoiner, xlsxReader, intervalResampler
+from fcn_Solar_Calculator import DaySummation, SolarSlicer 
 
 ### FUNCTIONS ###
 def DailyAverage(monthly_data):
@@ -131,6 +132,7 @@ def MonthToDaySum(df):
             
     return sampled
 
+
 def main():
     """ Main fcn"""
     plt.close('all')
@@ -193,6 +195,7 @@ def main():
     DAILY_EXTERNAL_MEAN_2020 = DailyAverage(FUll_2020_EXTERNAL_DATA)
        
         #internal 
+    
     DAILY_WWTP_MEAN_2019 = DailyAverage(Full_WWTP_Interval_Data_2019)
     DAILY_WWTP_MEAN_2020 = DailyAverage(Full_WWTP_Interval_Data_2020)
 
@@ -207,11 +210,12 @@ def main():
         #wwtp
     WEEKLY_WWTP_MEDIAN_2019 = WeeklyAverage(Full_WWTP_Interval_Data_2019)
     WEEKLY_WWTP_MEDIAN_2020 = WeeklyAverage(Full_WWTP_Interval_Data_2020)
-    
-    
+
+      
     ### STEP N+1 - PLOTTING GRAPHS ###
+    GUI_Solar(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020) #, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020
     
-    GUI(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020, WEEKLY_EXTERNAL_MEDIAN_2018, WEEKLY_EXTERNAL_MEDIAN_2019, WEEKLY_EXTERNAL_MEDIAN_2020, DAILY_WWTP_MEAN_2019, DAILY_WWTP_MEAN_2020, WEEKLY_WWTP_MEDIAN_2019, WEEKLY_WWTP_MEDIAN_2020) #need to clean up everything I'm passing to this function
+    GRAPH_GUI(DAILY_EXTERNAL_MEAN_2018, DAILY_EXTERNAL_MEAN_2019, DAILY_EXTERNAL_MEAN_2020, WEEKLY_EXTERNAL_MEDIAN_2018, WEEKLY_EXTERNAL_MEDIAN_2019, WEEKLY_EXTERNAL_MEDIAN_2020, DAILY_WWTP_MEAN_2019, DAILY_WWTP_MEAN_2020, WEEKLY_WWTP_MEDIAN_2019, WEEKLY_WWTP_MEDIAN_2020) #need to clean up everything I'm passing to this function
     
     
 
