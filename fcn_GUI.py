@@ -334,7 +334,7 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
         save_folder = 'OUTPUT DATA\\'
         try:
-            time_stamp = selected_Start[0] + '__' + selected_finish[0]
+            time_stamp = selected_Start[0] + '__' + selected_Finish[0]
         except TypeError:
             time_stamp = 'ERROR'
         sanitized_time_stamp = time_stamp.replace(':', '.')
