@@ -242,7 +242,7 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
     Finish_Time = Start_Time #nasty way to determine output time, user selects input, and then code finds index location of matching input
     Year = ('2018', '2019', '2020')
     MONTHS = {0: 'JAN', 1: 'FEB', 2: 'MAR', 3: 'APR', 4: 'MAY', 5: 'JUN', 6: 'JUL', 7: 'AUG', 8: 'SEP', 9: 'OCT', 10: 'NOV', 11: 'DEC'} #dict for accessing months
-    Start_Post = Finish_Post = selected_Start = selected_Finish = 0 #initilising here, so scope doesnt screw me
+    Start_Post = Finish_Post = selected_Start = selected_finish = 0 #initilising here, so scope doesnt screw me
     total_months = 12
     Plot = Export = False #to select whether to plot or export 
 
@@ -334,7 +334,7 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
         save_folder = 'OUTPUT DATA\\'
         try:
-            time_stamp = selected_Start[0] + '__' + selected_Finish[0]
+            time_stamp = selected_Start[0] + '__' + selected_finish[0]
         except TypeError:
             time_stamp = 'ERROR'
         sanitized_time_stamp = time_stamp.replace(':', '.')
@@ -407,37 +407,3 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
 
     return #nothing
-
-
-def GUI_Chooser(): 
-    """GUI Landing Page to choose subsequent GUI"""
-    ### VARS ###
-    GENERATION_HOURS = CONSUMPTION_PROFILES = False #to choose things
-
-    ### LAYOUT ###
-     ### LAYOUT ###
-    layout = [  [sg.Text('', size = (20, None)), sg.Text('NE WATER LANDING PAGE ', size = (40, None))], 
-            [sg.Button('GENERATION HOURS'), sg.Button('AVERAGE CONSUMPTION PROFILES'), sg.Button('Exit')]] #sg.Button('Save .CSV'), for future addon
-
-    window = sg.Window('NE WATER LANDING PAGE', layout) #open the window
-    
-    
-    
-    while True: #persistent window
-        event, values = window.read() #read the GUI events
-
-        if event == 'GENERATION HOURS': 
-            GENERATION_HOURS = True
-
-        if event == 'AVERAGE CONSUMPTION PROFILES': 
-            CONSUMPTION_PROFILES = True
-
-        if event == 'Exit': 
-            window.close()
-
-    return #nothing
-
-
-
-
-# GUI_Chooser()
