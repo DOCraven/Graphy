@@ -10,9 +10,15 @@ from fcn_Solar_Calculator import DaySummation, SolarSlicer, SolarOrganiser
 
 
 
+def Solar_Plotter(df, TITLE = 'Percentage of Generation Between Two Set Points', X_LABEL = 'NMID', Y_LABEL = '% of generation'): 
+    """plots box plots for the percentage of generation between two set points"""
+    
+    fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind="bar")
+    fig.show() #show the figure in the default web browser
 
+    return #nothing
 
-def Average_Plotter(df, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYPE = 'Subplot'): #this is where things are plotted, will require _some_ manual manipulation until I make it nicer
+def Average_Plotter(df = None, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL = 'kWh', PLOTTYPE = 'Subplot'): #this is where things are plotted, will require _some_ manual manipulation until I make it nicer
     """ 
     Plots the given dataframe using cufflinks
     """
@@ -227,7 +233,7 @@ def GRAPH_GUI(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, DAILY_EXTERNAL_MEAN_2020 = None):
     """GUI to assist in plotting Solar Consumption Hours"""
 
-    ### STEP 1 - LAYOUT ###
+    ### VARS ###
         ### VARS ###
     Start_Time = ['00:00', '00:30', '01:00', '01:30','02:00', '02:30','03:00', '03:30','04:00', '04:30','05:00', '05:30',
     '06:00', '06:30','07:00', '07:30','08:00', '08:30','09:00', '09:30','10:00', '10:30','11:00', '11:30',
@@ -237,11 +243,14 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
     Year = ('2018', '2019', '2020')
     MONTHS = {0: 'JAN', 1: 'FEB', 2: 'MAR', 3: 'APR', 4: 'MAY', 5: 'JUN', 6: 'JUL', 7: 'AUG', 8: 'SEP', 9: 'OCT', 10: 'NOV', 11: 'DEC'} #dict for accessing months
     Start_Post = Finish_Post = selected_Start = selected_Finish = 0 #initilising here, so scope doesnt screw me
-    
+    total_months = 12
+    Plot = Export = False #to select whether to plot or export 
+
+    ### LAYOUT ###
     layout = [  [sg.Text('', size = (20, None)), sg.Text('Daily Consumption Times ', size = (20, None))], 
             [sg.Text('Pick a year', size = (12, None)), sg.Listbox(Year, size=(20, len(Year)), key='Year')],
             [sg.Text('Start Time', size = (12, None)), sg.Listbox(Start_Time, size=(20, len(Start_Time)), key='Start_Time'), sg.Text('Finish Time', size = (12, None)), sg.Listbox(Finish_Time, size=(20, len(Finish_Time)), key='Finish_Time')],
-            [sg.Button('Generate'), sg.Button('Exit')]  ] #sg.Button('Save .CSV'), for future addon
+            [sg.Button('Export'), sg.Button('Plot'), sg.Button('Exit')]] #sg.Button('Save .CSV'), for future addon
 
     window = sg.Window('NE WATER SOLAR HOURS', layout) #open the window
 
@@ -250,7 +259,8 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
         event, values = window.read() #read the GUI events
         if event is None:
             break
-        if event == 'Generate': #get whatever is selected when you press "GENERATE"
+        if event == 'Export': #get whatever is selected when you press "GENERATE"
+            Export = True
             if values['Start_Time']: #find the starting post
                 
                 selected_Start = values['Start_Time'] #this is a list, so you must index is accordingly
@@ -281,43 +291,109 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
             else: 
                 print('please select a Finish Time')
         
+        
         ### LOGIC HAPPENS HERE ###
             ##LOGIC VARS##
-            total_months = 11
-            save_folder = 'OUTPUT DATA\\'
-            time_stamp = selected_Start[0] + '__' + selected_finish[0]
-            sanitized_time_stamp = time_stamp.replace(':', '.')
+        
+       
+        if event == 'Plot': #ie, plot button is pushed, so plot the selected time/date/average
+            Plot = True
+            if values['Start_Time']: #find the starting post
+                selected_Start = values['Start_Time'] #this is a list, so you must index is accordingly
+                Start_Post = Start_Time.index(selected_Start[0])
+            else: 
+                print('please select a Start Time')
 
-
-
-
-        if year == 2018: 
-            Sliced_Consumption_Percentage_2018 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2018, Start_Post, Finish_Post) #generate percentage
-            writer = pd.ExcelWriter(save_folder + '2018_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
-          
-            for x in range (0, total_months): #iterate through each month 
-                Sliced_Consumption_Percentage_2018[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
-
-            writer.save() #close excel file and save
-
-        elif year == 2019:
-            Sliced_Consumption_Percentage_2019 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2019, Start_Post, Finish_Post) #generate percentage
-            writer = pd.ExcelWriter(save_folder + '2019_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
-          
-            for x in range (0, total_months): #iterate through each month 
-                Sliced_Consumption_Percentage_2019[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
+                #do yearly logic
+            if values['Year']:  #determine the year
+                selectedYear = values['Year'] 
+                #do year logic
+                if selectedYear == ['2018']:
+                    year = 2018
+                elif selectedYear == ['2019']: 
+                    year = 2019
+                elif selectedYear == ['2020']:
+                    year = 2020
+            else: 
+                print('please select a year')
             
-            writer.save() #close excel file and save
 
-        elif year == 2020:
-            Sliced_Consumption_Percentage_2020 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2020, Start_Post, Finish_Post) #generate percentage
-            writer = pd.ExcelWriter(save_folder + '2020_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
+            if values['Finish_Time']: #find the finish post
+                selected_finish = values['Finish_Time']
+                Finish_Post = Start_Time.index(selected_finish[0])
+                ## error check ##
+                if Finish_Post < Start_Post: 
+                    print("ERROR: Please select a finishing time AFTER the starting time")
+            else: 
+                print("Error")
 
-            for x in range (0, total_months): #iterate through each month 
-                Sliced_Consumption_Percentage_2020[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
+        if event == 'Exit':
+            window.close()
 
-            writer.save() #close excel file and save
+        ## LOGIC GOES HERE ###
 
+        save_folder = 'OUTPUT DATA\\'
+        time_stamp = selected_Start[0] + '__' + selected_finish[0]
+        sanitized_time_stamp = time_stamp.replace(':', '.')
+        
+
+        if Export: #only save data
+            if year == 2018: 
+                Sliced_Consumption_Percentage_2018 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2018, Start_Post, Finish_Post) #generate percentage
+                writer = pd.ExcelWriter(save_folder + '2018_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
+            
+                for x in range (0, total_months): #iterate through each month 
+                    Sliced_Consumption_Percentage_2018[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
+
+                writer.save() #close excel file and save
+
+            elif year == 2019:
+                Sliced_Consumption_Percentage_2019 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2019, Start_Post, Finish_Post) #generate percentage
+                writer = pd.ExcelWriter(save_folder + '2019_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
+            
+                for x in range (0, total_months): #iterate through each month 
+                    Sliced_Consumption_Percentage_2019[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
+                
+                writer.save() #close excel file and save
+
+            elif year == 2020:
+                Sliced_Consumption_Percentage_2020 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2020, Start_Post, Finish_Post) #generate percentage
+                writer = pd.ExcelWriter(save_folder + '2020_NE_WATER_SITE_PERCENTAGE ' + sanitized_time_stamp + '.xlsx', engine='xlsxwriter') #initilise the sheet writer
+
+                for x in range (0, total_months): #iterate through each month 
+                    Sliced_Consumption_Percentage_2020[x].to_excel(writer, sheet_name = MONTHS[x]) #save each dataframe into a new sheet
+
+                writer.save() #close excel file and save
+
+            Export = False
+
+        if Plot: 
+            if year == 2018: 
+                Sliced_Consumption_Percentage_2018 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2018, Start_Post, Finish_Post) #generate percentage
+                for x in range(0, total_months): #plot 12 months at once
+                    chosen_month = MONTHS[x] # converts integer month into string name of month via Months dict 
+
+                    User_Title = chosen_month + ' ' + str(year) + ': Percentage of Generation Between ' + sanitized_time_stamp #procedurally geenerate 
+                    Solar_Plotter(Sliced_Consumption_Percentage_2018[x], TITLE = User_Title )
+
+            elif year == 2019:
+                Sliced_Consumption_Percentage_2019 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2019, Start_Post, Finish_Post) #generate percentage
+                for x in range(0, total_months): #plot 12 months at once
+                    chosen_month = MONTHS[x] # converts integer month into string name of month via Months dict 
+
+                    User_Title = chosen_month + ' ' + str(year) + ': Percentage of Generation Between ' + sanitized_time_stamp #procedurally geenerate 
+                    Solar_Plotter(Sliced_Consumption_Percentage_2019[x], TITLE = User_Title )
+            
+            elif year == 2020:
+                Sliced_Consumption_Percentage_2020 = SolarOrganiser(DAILY_EXTERNAL_MEAN_2020, Start_Post, Finish_Post) #generate percentage
+                for x in range(0, total_months): #plot 12 months at once
+                    chosen_month = MONTHS[x] # converts integer month into string name of month via Months dict 
+
+                    User_Title = chosen_month + ' ' + str(year) + ': Percentage of Generation Between ' + sanitized_time_stamp #procedurally geenerate 
+                    Solar_Plotter(Sliced_Consumption_Percentage_2020[x], TITLE = User_Title )
+            Plot = False
+
+        
         elif event == 'Exit':
             window.close()
                     
@@ -329,3 +405,4 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
 
     return #nothing
 
+# GUI_Solar()

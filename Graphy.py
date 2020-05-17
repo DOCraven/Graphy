@@ -140,6 +140,8 @@ def main():
     ## VARS ##
     cwd = os.getcwd()
     Input_Folder = cwd + '\\INPUT DATA\\'
+    if not os.path.exists(cwd + '\\OUTPUT DATA\\'):
+        os.mkdir(cwd + '\\OUTPUT DATA\\')
     startMSG = ('\nNE WATER DATA ANALYSIS TOOL\n\nThis code takes about a minute to run\nPlease be patient\n\n\n')
     print(startMSG)
     
