@@ -17,9 +17,15 @@ This program includes NE Water data from External Sites and within WWTP.
 
 ## VERSION 
 
-Version 1.6.0  
+Version 1.6.1  
 Last Updated: 17MAY20
 
+
+## OVERVIEW
+This program will generate two graphical user interfaces in a row. 
+
+1.  The first GUI will generate a percentage of consumption between two user defined hours. This can be viewed as a graph OR saved as a `xlsx` file with multiple sheets for multiple months. The expected output is a percentage (ie, 0-100%)
+1.  The second GUI will plot daily and weekly average load profiles for WWTP and external NE Water loads. Currently there is no option to export as a `xlsx` file. 
 
 ## How to use
 
@@ -55,9 +61,10 @@ Last Updated: 17MAY20
 
 ## Dependencies
 
-There are 2 accompanying files required in order for this program to work
+There are accompanying files required in order for this program to work. These files must be in the root directory. 
 -  `GUI_fcn,py`
 -  `UTILS_fcn.py`
+-  `fcn_Solar_Calculator.py`
 
 There are multiple `xlsx` files in the `/INPUT DATA` folder required for this program to work properly. 
 -  `2018_NE_WATER_EXTERNAL_LOAD.xlsx`

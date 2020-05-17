@@ -32,8 +32,6 @@ def SolarOrganiser(monthly_data, startpost = None, finishpost = None):
     
     return Percentage_Consumption #all I care about is percentage consumption
 
-
-
 def DaySummation(daily_data):
     """
     sums all the data in a daily average for monthly invertal data, and returns total load for that average day 
