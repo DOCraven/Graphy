@@ -35,8 +35,8 @@ This program will generate a landing page to direct the user to two seperate GUI
 1. In Visual Studio Code, open the folder that `Graphy.py` is located in via `CTRL + K + O`.
 1. Ensure the `xls` file is in the root folder (ie, same as `Graphy.py`).
 1. Run `Graphy.py`. 
--  either within your IDE (in VS CODE, green triangle in Upper RH corner).
--  or via the terminal using  `python graphy.py`.
+   -  either within your IDE (in VS CODE, green triangle in Upper RH corner).
+   -  or via the terminal using  `python graphy.py`.
 1. Use the included GUI to select which months and interval you want to plot.
 
 
