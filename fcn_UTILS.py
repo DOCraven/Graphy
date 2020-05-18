@@ -20,6 +20,7 @@ def dataJoiner(Full_df, incomplete_df):
         MergedDF.interpolate(method = 'polynomial', order = 2, inplace = True) #use linear interpolation to fill in the blank places
         try: 
             MergedDF['Solar Less WWTP'] = MergedDF['Solar Generation (kW)'] - MergedDF['Wodonga WTP'] #calculate the total excess generation AFTER WWTP has used available generation
+            MergedDF['Solar Less WWTP'].clip(lower = 0, inplace = True) #replace all negative values with 0
         except KeyError: #if WWTP doesnt exist for some reason
             pass
         finalDF.append(MergedDF)
