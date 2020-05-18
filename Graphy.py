@@ -53,7 +53,7 @@ from calendar import day_name
 import PySimpleGUI as sg
 
 #external explicit function files
-from fcn_GUI import GRAPH_GUI, GUI_Solar, GUI_Chooser
+from fcn_GUI import GRAPH_GUI, GUI_Solar
 from fcn_UTILS import dataJoiner, xlsxReader, intervalResampler
 from fcn_Solar_Calculator import DaySummation, SolarSlicer 
 
