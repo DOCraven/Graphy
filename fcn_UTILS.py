@@ -18,6 +18,11 @@ def dataJoiner(Full_df, incomplete_df):
         MergedDF = pd.merge(Full_df[x], incomplete_df[x], how = 'outer', on = Index_Name) #merges two dataframes on consistent "Interval End" names 
         # https://realpython.com/pandas-merge-join-and-concat/#pandas-merge-combining-data-on-common-columns-or-indices
         MergedDF.interpolate(method = 'polynomial', order = 2, inplace = True) #use linear interpolation to fill in the blank places
+        try: 
+            MergedDF['Solar Less WWTP'] = MergedDF['Solar Generation (kW)'] - MergedDF['Wodonga WTP'] #calculate the total excess generation AFTER WWTP has used available generation
+            MergedDF['Solar Less WWTP'].clip(lower = 0, inplace = True) #replace all negative values with 0
+        except KeyError: #if WWTP doesnt exist for some reason
+            pass
         finalDF.append(MergedDF)
     
     return finalDF
