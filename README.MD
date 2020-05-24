@@ -32,6 +32,9 @@ This program will generate a landing page to direct the user to two seperate GUI
       -  Solar generation available for external loads (ie, solar generation LESS WWTP LOAD) - This data is somewhat incomplete.
 1.  The second GUI will plot daily and weekly average load profiles for WWTP and external NE Water loads. Various options exist for assisting in the analysis. Currently there is no option to export as a `xlsx` file. The expected output is a graph. 
 
+1.  There are ancillary functions to assist with other data manipulation. These are presented as external to the main `graphy.py` file, and require user input. Theses are as follows. 
+    *  `plotty.py` will plot an `xlsx` or `csv` file and plot the existing data to match the format of the main `Graphy.py`. This is useful for data external to `Graphy.py`. This is presented as is, and will require user input, and it will break regularly.  
+
 ## How to use
 
 1. Clone the `master` branch. 
