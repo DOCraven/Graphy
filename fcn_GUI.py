@@ -25,17 +25,31 @@ def Average_Plotter(df = None, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL =
     ## determing the rows/columns for subplots, change this to output for your screen
     # plotting types
     #nice looking individual plot
+    individual = False #for control 
     if PLOTTYPE == 'Individual':
         fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, theme='white')
+        individual = True
     elif PLOTTYPE == 'Bar':
-        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'bar', theme='white')
+        Plot_Kind = 'bar'
     elif PLOTTYPE == 'Histogram':
-        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'histogram', theme='white')
+        # fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'histogram', theme='white')
+        Plot_Kind = 'histogram'
     elif PLOTTYPE == 'Box':
-        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'box', theme='white')
+        # fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'box', theme='white')
+        Plot_Kind = 'box'
+    elif PLOTTYPE == 'Heat':
+        # fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'heat', theme='white')
+        Plot_Kind = 'heat'
+    elif PLOTTYPE == 'Spread':
+        # fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'spread', theme='white')        
+        Plot_Kind = 'spread'
+    elif PLOTTYPE == 'Subplot': 
+        Plot_Kind = 'subplot'
     else:
         print('Incorrect Plot Type')
 
+    if not individual: 
+        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = Plot_Kind, theme='white')
     fig.show() #show the figure in the default web browser
 
     return #nothing
@@ -48,7 +62,7 @@ def GRAPH_GUI(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
     Months = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
     Year = ('2018', '2019', '2020')
     Interval = ('Daily', 'Weekly')
-    Plot = ('Individual', 'Bar',  'Histogram', 'Box')
+    Plot = ('Individual', 'Bar',  'Histogram', 'Box', 'Spread')
     Location = ('External', 'WWTP')
     
     NE_WATER_MONTHS = {0: 'JAN', 1: 'FEB', 2: 'MAR', 3: 'APR', 4: 'MAY', 5: 'JUN', 6: 'JUL', 7: 'AUG', 8: 'SEP', 9: 'OCT', 10: 'NOV', 11: 'DEC'} #dict for accessing months
@@ -104,6 +118,11 @@ def GRAPH_GUI(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
                     plottype = 'Histogram'
                 elif selectedPlot == ['Box']:
                     plottype = 'Box'
+                elif selectedPlot == ['Spread']:
+                    plottype = 'Spread'
+                elif selectedPlot == ['Heatmap']:
+                    plottype = 'Heatmap'
+
             else: 
                 print('please select a plot type')
                     
