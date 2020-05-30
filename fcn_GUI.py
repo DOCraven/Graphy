@@ -10,10 +10,10 @@ from fcn_Solar_Calculator import DaySummation, SolarSlicer, SolarOrganiser
 
 
 
-def Solar_Plotter(df, TITLE = 'Percentage of Generation Between Two Set Points', X_LABEL = 'NMID', Y_LABEL = '% of generation'): 
+def Solar_Plotter(df, TITLE = 'Percentage of Generation Between Two Set Points', X_LABEL = 'LOCATION', Y_LABEL = '% Of Generation'): 
     """plots box plots for the percentage of generation between two set points"""
     
-    fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind="bar")
+    fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind="bar", theme='white')
     fig.show() #show the figure in the default web browser
 
     return #nothing
@@ -26,13 +26,13 @@ def Average_Plotter(df = None, TITLE = 'DAILY MEAN', X_LABEL = 'Time', Y_LABEL =
     # plotting types
     #nice looking individual plot
     if PLOTTYPE == 'Individual':
-        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE)
+        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, theme='white')
     elif PLOTTYPE == 'Bar':
-        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'bar')
+        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'bar', theme='white')
     elif PLOTTYPE == 'Histogram':
-        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'histogram')
+        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'histogram', theme='white')
     elif PLOTTYPE == 'Box':
-        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'box')
+        fig = df.iplot(asFigure=True, xTitle=X_LABEL, yTitle=Y_LABEL, title=TITLE, kind = 'box', theme='white')
     else:
         print('Incorrect Plot Type')
 
@@ -400,10 +400,5 @@ def GUI_Solar(DAILY_EXTERNAL_MEAN_2018 = None, DAILY_EXTERNAL_MEAN_2019 = None, 
         elif event == 'Exit':
             window.close()
                     
-                
-
-            
-    ### STEP 3 - GENERATE VALUES ###
-
 
     return #nothing

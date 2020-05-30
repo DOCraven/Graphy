@@ -176,6 +176,7 @@ def main():
     WWTP_Interval_Data_2020 = xlsxReader(WWTP_interval_data_2020_file_name)
     print('Read WWTP Data')
 
+   
     ## STEP 2 - CONCAT SOLAR DATA ONTO BACK OF RELEVENT YEAR LOAD DATA AND INTERPOLATE NaN if required ##
     FUll_2018_EXTERNAL_DATA = dataJoiner(FullIntervalData_2018, FullSolarData)
     FUll_2019_EXTERNAL_DATA = dataJoiner(FullIntervalData_2019, FullSolarData)
