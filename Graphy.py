@@ -151,9 +151,8 @@ def main():
     Interval_data_2020_file_name = Input_Folder + '2020_NE_WATER_EXTERNAL_LOAD.xlsx' #2020 data
     
         #solar data - currently dummy data
-    Solar_data_2018_file_name = Input_Folder + 'SOLAR_2018_DUMMY.xlsx'
-    Solar_data_2019_file_name = Input_Folder + 'SOLAR_2019_DUMMY.xlsx'
-    Solar_data_2020_file_name = Input_Folder + 'SOLAR_2020_DUMMY.xlsx'
+    Solar_Representative_Year_file_name = Input_Folder + 'SOLAR_REPRESENTATIVE_YEAR.xlsx' #solar data file to be used for all years. 
+    
     
     # WWTP DATA #
 
@@ -170,19 +169,17 @@ def main():
     print('Read 2020 External Data')
 
     #     #solar data
-    FullSolarData_2018 = xlsxReader(Solar_data_2018_file_name)
-    FullSolarData_2019 = xlsxReader(Solar_data_2019_file_name)
-    FullSolarData_2020 = xlsxReader(Solar_data_2020_file_name)
+    FullSolarData = xlsxReader(Solar_Representative_Year_file_name)
     print('Read Solar Data')
-        #WWTP DATA
+        #WWTP DATA - internal WWTP data for submetering etc
     WWTP_Interval_Data_2019 = xlsxReader(WWTP_interval_data_2019_file_name)
     WWTP_Interval_Data_2020 = xlsxReader(WWTP_interval_data_2020_file_name)
     print('Read WWTP Data')
 
     ## STEP 2 - CONCAT SOLAR DATA ONTO BACK OF RELEVENT YEAR LOAD DATA AND INTERPOLATE NaN if required ##
-    FUll_2018_EXTERNAL_DATA = dataJoiner(FullIntervalData_2018, FullSolarData_2018)
-    FUll_2019_EXTERNAL_DATA = dataJoiner(FullIntervalData_2019, FullSolarData_2019)
-    FUll_2020_EXTERNAL_DATA = dataJoiner(FullIntervalData_2020, FullSolarData_2020)
+    FUll_2018_EXTERNAL_DATA = dataJoiner(FullIntervalData_2018, FullSolarData)
+    FUll_2019_EXTERNAL_DATA = dataJoiner(FullIntervalData_2019, FullSolarData)
+    FUll_2020_EXTERNAL_DATA = dataJoiner(FullIntervalData_2020, FullSolarData)
 
     ## STEP 3 - Interpolate WWTP data ##
     Full_WWTP_Interval_Data_2019 = intervalResampler(WWTP_Interval_Data_2019) 
@@ -213,8 +210,6 @@ def main():
     WEEKLY_WWTP_MEDIAN_2020 = WeeklyAverage(Full_WWTP_Interval_Data_2020)
 
       
-    ### STEP N+1 - PLOTTING GRAPHS VIA GUI STUFF
-
     GENERATION_HOURS = CONSUMPTION_PROFILES = False #to choose things
     layout = [  [sg.Text('', size = (20, None)), sg.Text('NE WATER LANDING PAGE ', size = (40, None))], 
             [sg.Button('GENERATION HOURS'), sg.Button('AVERAGE CONSUMPTION PROFILES'), sg.Button('Exit')]] #Landing page, not made a function so I dont have to pass bulk values to it. Will fix shortly
